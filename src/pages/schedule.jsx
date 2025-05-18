@@ -42,13 +42,6 @@ export function Schedule() {
         end: "2025-05-18 12:30",
         description: "React advanced patterns",
       },
-      {
-        id: "3",
-        title: "Workshop",
-        start: "2025-05-18 10:00",
-        end: "2025-05-18 12:30",
-        description: "React advanced patterns",
-      },
     ],
     plugins: [createEventModalPlugin()],
     defaultView: "week",

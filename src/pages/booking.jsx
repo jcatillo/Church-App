@@ -2,10 +2,29 @@ import { Box, Heading, Separator, Flex, Field, Input, Stack, Button, InputGroup,
 import { useForm, Controller } from "react-hook-form"
 import { withMask } from "use-mask-input"
 import { Toaster, toaster } from "@/components/ui/toaster"
+import { useState, useEffect } from 'react';
+import { addBooking, getBookings } from '@/data/bookings';
 
 
 
-export function Booking() {    
+
+export function Booking() {   
+  const [bookings, setBookings] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getBookings();
+        setBookings(data);
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+    
     const {
         register,
         handleSubmit,
@@ -15,6 +34,7 @@ export function Booking() {
 
     const onSubmit = handleSubmit((data) => {
         console.log(data);
+        addBooking(data);
         toaster.create({
             title: "Booking successful!",
             description: "Please check your email occasionally to see some updates",
