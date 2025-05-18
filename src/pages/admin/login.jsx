@@ -33,14 +33,15 @@ export function Login() {
     
 
         if (auth.currentUser) {
-        // Add your login logic here
-        toaster.create({
-            title: "Login successful.",
-            description: "You have logged in successfully.",
-            type: "success",
-        });
+            toaster.create({
+                title: "Login successful.",
+                description: "You have logged in successfully.",
+                type: "success",
+            });
 
-        navigate("/admin/home");
+            setTimeout(() => {
+                navigate("/admin/home");
+            }, 1500); // Adjust delay as needed
         } else {
             toaster.create({
                 title: "Login failed.",
