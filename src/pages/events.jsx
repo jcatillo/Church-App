@@ -132,7 +132,10 @@ const { past, upcoming } = splitEventsByDate(events);
 export function Events() {
   return (
     <>
-      <h1 style={{ marginBottom: "10px", marginLeft: "20px" }}>
+      <h1
+        className="label"
+        style={{ marginBottom: "10px", marginLeft: "20px" }}
+      >
         Upcoming Events
       </h1>
       <Flex
@@ -140,7 +143,7 @@ export function Events() {
         align="center"
         width="100%"
         gap="4vh"
-        overflowX="hidden"
+        overflowX="auto"
         overflowY="hidden"
         maxHeight={"81dvh"}
         flex="1"
@@ -148,22 +151,16 @@ export function Events() {
         grow={0}
         css={{
           "&::-webkit-scrollbar": {
-            height: "4px", // Adjust scrollbar height
+            height: "4px",
             background: "transparent",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: "transparent",
+            background: "transparent", // Invisible by default
             borderRadius: "10px",
-            transform: "scaleY(0)", // Start with scale 0
-            transformOrigin: "center",
-            transition: "all 0.6 ease",
+            transition: "all 0.3s ease",
           },
-          "&:hover": {
-            overflowX: "auto",
-            "&::-webkit-scrollbar-thumb": {
-              background: "gray.300", // Change to your preferred color
-              transform: "scaleY(1)", // Scale to full size on hover
-            },
+          "&:hover::-webkit-scrollbar-thumb": {
+            background: "#A0AEC0", // gray.300 hex value
           },
         }}
       >
@@ -260,7 +257,7 @@ export function Events() {
         align="center"
         width="100%"
         gap="4vh"
-        overflowX="hidden"
+        overflowX="auto"
         overflowY="hidden"
         maxHeight={"81dvh"}
         flex="1"
@@ -268,22 +265,16 @@ export function Events() {
         grow={0}
         css={{
           "&::-webkit-scrollbar": {
-            height: "4px", // Adjust scrollbar height
+            height: "4px",
             background: "transparent",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: "transparent",
+            background: "transparent", // Invisible by default
             borderRadius: "10px",
-            transform: "scaleY(0)", // Start with scale 0
-            transformOrigin: "center",
-            transition: "all 0.6 ease",
+            transition: "all 0.3s ease",
           },
-          "&:hover": {
-            overflowX: "auto",
-            "&::-webkit-scrollbar-thumb": {
-              background: "gray.300", // Change to your preferred color
-              transform: "scaleY(1)", // Scale to full size on hover
-            },
+          "&:hover::-webkit-scrollbar-thumb": {
+            background: "#A0AEC0", // gray.300 hex value
           },
         }}
       >
@@ -346,10 +337,19 @@ export function Events() {
                         WebkitBoxOrient: "vertical",
                       }}
                     >
-                      {" "}
                       {event.title}
                     </Card.Title>
-                    <Card.Description style={{ fontSize: "1rem" }}>
+                    <Card.Description
+                      style={{
+                        fontSize: "1rem",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        maxHeight: "10rem", // Approximately 2 lines of text at 1rem font-size
+                      }}
+                    >
                       {event.description}
                     </Card.Description>
                   </Flex>

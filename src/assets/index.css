@@ -1,7 +1,10 @@
-@media (max-width: 800px){
+@media (max-width: 800px) or (min-height: 300px) {
   .responsive-card {
     min-height: 16rem;
     max-height: 16rem;
     min-width: 300px;
+  }
+  .label {
+    margin-top: 1.5vh;
   }
 }
