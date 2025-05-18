@@ -19,6 +19,7 @@ import {
 const MotionBox = motion(Box);
 const MotionCard = motion(Card.Root);
 
+
   // Sample data for each service
 const services = [
     {

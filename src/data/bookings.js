@@ -18,12 +18,18 @@ export const getBookings = async () => {
 };
 
 export const addBooking = async (data) => {
-  const dateStr = data.date; // "2025-05-21T16:00:00.000Z"
-  const timeStr = data.time; // "May 18, 2025 at 2:30:00 PM UTC+8"
+  // Get the date object
+  const dateObj = new Date(data.date);
+  
+  // Format the date in YYYY-MM-DD format preserving the selected date 
+  // regardless of timezone by using local date methods
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
 
-  const formattedDate = dateStr ? dateStr.substring(0, 10) : null;
-
-  const timeDate = new Date(timeStr);
+  // Process the time
+  const timeDate = new Date(data.time);
   const hours = timeDate.getHours().toString().padStart(2, "0");
   const minutes = timeDate.getMinutes().toString().padStart(2, "0");
   const formattedTime = `${hours}:${minutes}`;

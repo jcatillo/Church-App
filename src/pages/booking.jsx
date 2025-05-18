@@ -95,7 +95,7 @@ export function Booking() {
           Booking
         </Heading>
         <Separator mb={4} />
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} autoComplete="off">
           <Stack gap="4" align="flex-start" maxW="sm">
             <Field.Root invalid={errors.firstName ? true : false}>
               <Field.Label>
@@ -238,22 +238,22 @@ export function Booking() {
               <Field.Label>
                 Select date<span style={{ color: "red" }}>*</span>
               </Field.Label>
-              <form autoComplete="off">
                 <Controller
                   control={control}
                   name="date"
+                  rules={{ required: "Date is required" }}
                   render={({ field }) => (
                     <DatePicker
+                      placeholderText="Select Date"
                       {...field}
                       selected={field.value}
+                      minDate={new Date()}
                       onChange={(date) => field.onChange(date)}
                       dateFormat="yyyy/MM/dd"
                       customInput={<Input autoComplete="off" />}
-                      minDate={new Date()}
                     />
                   )}
                 />
-              </form>
               <Field.ErrorText>
                 {errors.date && errors.date.message}
               </Field.ErrorText>
@@ -264,7 +264,6 @@ export function Booking() {
                 Select Time<span style={{ color: "red" }}>*</span>
               </Field.Label>
 
-              <form autoComplete="off">
                 <Controller
                   control={control}
                   name="time"
@@ -283,7 +282,6 @@ export function Booking() {
                     />
                   )}
                 />
-              </form>
               <Field.ErrorText>
                 {errors.date && errors.date.message}
               </Field.ErrorText>
