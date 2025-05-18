@@ -49,8 +49,11 @@ export function Login() {
             });
         }
     }catch(err){
-            console.log(err);
-    }
+            toaster.create({
+                title: "Login failed.",
+                description: "Please provide the correct credentials.",
+                type: "error",
+            });    }
   };
 
   return (
