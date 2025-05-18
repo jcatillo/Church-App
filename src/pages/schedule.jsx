@@ -39,7 +39,7 @@ export function Schedule() {
 
     plugins:[
         createEventModalPlugin()
-    ]
+    ],
   })
 
   return (
