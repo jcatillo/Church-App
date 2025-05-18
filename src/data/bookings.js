@@ -37,6 +37,7 @@ export const addBooking = async (data) => {
       bookingType: data.type[0],
       date: formattedDate,
       time: formattedTime,
+      status: "pending",
     });
   } catch (err) {
     console.log(err);
