@@ -62,7 +62,7 @@ export function ContactUs() {
           <VStack
             spacing={8}
             align="stretch"
-            bg={isDark ? "gray.800" : "white"}
+            bg={isDark ? "#222324" : "white"}
             p={8}
             borderRadius="lg"
             boxShadow="md"
@@ -138,7 +138,7 @@ export function ContactUs() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            bg={isDark ? "gray.800" : "white"}
+            bg={isDark ? "#222324" : "white"}
             p={8}
             borderRadius="lg"
             boxShadow="md"
@@ -148,8 +148,8 @@ export function ContactUs() {
                 placeholder="Your Name"
                 size="lg"
                 required
-                bg={isDark ? "gray.700" : "gray.50"}
-                color={isDark ? "white" : "black"}
+                bg={isDark ? "black" : "gray.50"}
+                color={isDark ? "black" : "black"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -162,8 +162,8 @@ export function ContactUs() {
                 placeholder="Your Email"
                 size="lg"
                 required
-                bg={isDark ? "gray.700" : "gray.50"}
-                color={isDark ? "white" : "black"}
+                bg={isDark ? "black" : "gray.50"}
+                color={isDark ? "black" : "black"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -175,8 +175,8 @@ export function ContactUs() {
                 placeholder="Subject"
                 size="lg"
                 required
-                bg={isDark ? "gray.700" : "gray.50"}
-                color={isDark ? "white" : "black"}
+                bg={isDark ? "black" : "gray.50"}
+                color={isDark ? "black" : "black"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -189,8 +189,8 @@ export function ContactUs() {
                 size="lg"
                 required
                 rows={6}
-                bg={isDark ? "gray.700" : "gray.50"}
-                color={isDark ? "white" : "black"}
+                bg={isDark ? "black" : "gray.50"}
+                color={isDark ? "black" : "black"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
