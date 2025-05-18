@@ -9,7 +9,8 @@ import {
     Flex,
     Button,
     Card,
-    SimpleGrid
+    SimpleGrid,
+    Link
   } from "@chakra-ui/react";
   import { motion } from "framer-motion"; // ✅ Import
   import heroImage from "../assets/IMG_4214.jpg";
@@ -214,9 +215,11 @@ const services = [
                     </Card.Description>
                 </Card.Body>
                 <Card.Footer p={4}>
+                  <a href="#/booking">
                     <Button colorScheme="blue" width="100%">
                     Book an Appointment
                     </Button>
+                  </a>
                 </Card.Footer>
                 </MotionCard>
             ))}
