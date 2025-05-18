@@ -1,18 +1,30 @@
+"use client";
+
 import {
   Box,
   Button,
   Flex,
   Stack,
-  ClientOnly,
   IconButton,
-  Skeleton,
+  CloseButton,
+  Portal,
+} from "@chakra-ui/react";
+import {
+  Drawer,
+  DrawerBackdrop,
+  DrawerPositioner,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerTrigger,
+  DrawerCloseTrigger,
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { useColorMode } from "@/components/ui/color-mode";
-import { LuMoon, LuSun } from "react-icons/lu";
-import { useState, useEffect } from "react";
-import { IoIosLogOut } from "react-icons/io";
+import { LuMoon, LuSun, LuMenu } from "react-icons/lu";
+import { IoIosLogOut } from "react-icons/io"; // Added missing import
 import { auth } from "@/config/firebase";
+import { useState, useEffect } from "react";
 
 export function AdminNavbar() {
   const { toggleColorMode, colorMode } = useColorMode();
@@ -37,15 +49,15 @@ export function AdminNavbar() {
     // { path: "/about-us", label: "About Us" },
   ];
 
-  const handleLogout = async () =>{
-    try{
-        await auth.signOut();
-        window.location.href="/";
-        console.log(auth.currentUser);
-    }catch(error){
-        console.log(error);
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      window.location.href = "/";
+      console.log(auth.currentUser);
+    } catch (error) {
+      console.error("Logout error:", error);
     }
-  }
+  };
 
   return (
     <Box
@@ -53,19 +65,20 @@ export function AdminNavbar() {
       position="sticky"
       top={0}
       zIndex={1000}
-      bg={colorMode === "light" ? "white" : "black"}
-      px={14}
+      bg={colorMode === "light" ? "white" : "gray.900"}
+      px={{ base: 4, md: 14 }}
       py={isSticky ? 5 : 5}
       boxShadow={isSticky ? "md" : "none"}
       transition="all 0.2s ease"
     >
       <Flex justify="space-between" align="center" width="100%">
-        {/* Navigation links */}
+        {/* Desktop Navigation links */}
         <Stack
           direction={{ base: "column", md: "row" }}
           spacing={3}
           align="center"
           wrap="wrap"
+          display={{ base: "none", md: "flex" }}
         >
           {links.map((link) => (
             <Link key={link.path} to={link.path}>
@@ -79,26 +92,84 @@ export function AdminNavbar() {
           ))}
         </Stack>
 
+        {/* Hamburger Icon for Mobile */}
+        <Drawer.Root>
+          <DrawerTrigger asChild>
+            <IconButton
+              display={{ base: "flex", md: "none" }}
+              variant="outline"
+              size="sm"
+              aria-label="Open menu"
+              
+            >
+                {<LuMenu />}
+            </IconButton>
+          </DrawerTrigger>
+          <Portal>
+            <DrawerBackdrop />
+            <DrawerPositioner>
+              <DrawerContent bg={colorMode === "light" ? "white" : "gray.900"}>
+                <DrawerCloseTrigger asChild>
+                  <CloseButton size="sm" position="absolute" right="8px" top="8px" />
+                </DrawerCloseTrigger>
+                <DrawerHeader>Menu</DrawerHeader>
+                <DrawerBody>
+                  <Stack direction="column" spacing={4}>
+                    {links.map((link) => (
+                      <Link key={link.path} to={link.path}>
+                        <Button
+                          variant={location.pathname === link.path ? "solid" : "ghost"}
+                          colorScheme="whiteAlpha"
+                          width="100%"
+                          justifyContent="flex-start"
+                        >
+                          {link.label}
+                        </Button>
+                      </Link>
+                    ))}
+                    <Button
+                      onClick={handleLogout}
+                      width="100%"
+                      justifyContent="flex-start"
+                    >
+                      Logout {<IoIosLogOut />}
+                    </Button>
+                    <Button
+                      onClick={toggleColorMode}
+                      variant="outline"
+                      width="100%"
+                      justifyContent="center"
+                    >
+                      {colorMode === "light" ? <LuSun /> : <LuMoon />}
+                    </Button>
+                  </Stack>
+                </DrawerBody>
+              </DrawerContent>
+            </DrawerPositioner>
+          </Portal>
+        </Drawer.Root>
+
         {/* Toggle Button and Admin login */}
         <Stack
           direction={{ base: "column", md: "row" }}
           spacing={4}
           align="center"
           wrap="wrap"
+          display={{ base: "none", md: "flex" }}
         >
           <Link to="/login">
-            <Button onClick={handleLogout}>Logout<IoIosLogOut /></Button>
+            <Button onClick={handleLogout}>
+              Logout{<IoIosLogOut />}
+            </Button>
           </Link>
-          <ClientOnly fallback={<Skeleton boxSize="8" />}>
-            <IconButton
-              onClick={toggleColorMode}
-              variant="outline"
-              size="sm"
-              aria-label="Toggle color mode"
-            >
-              {colorMode === "light" ? <LuSun /> : <LuMoon />}
-            </IconButton>
-          </ClientOnly>
+          <IconButton
+            onClick={toggleColorMode}
+            variant="outline"
+            size="sm"
+            aria-label="Toggle color mode"
+          >
+            {colorMode === "light" ? <LuSun /> : <LuMoon />}
+          </IconButton>
         </Stack>
       </Flex>
     </Box>
