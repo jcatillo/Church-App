@@ -1,4 +1,5 @@
 import { Flex, Avatar, Button, Card } from "@chakra-ui/react";
+import "../assets/index.css";
 
 const events = [
   {
@@ -184,6 +185,7 @@ export function Events() {
             }}
             transition="all 0.6s ease"
             willChange="transform, color"
+            className="responsive-card"
           >
             <Card.Body gap="2">
               <Flex
@@ -303,6 +305,7 @@ export function Events() {
             }}
             transition="all 0.6s ease"
             willChange="transform, color"
+            className="responsive-card"
           >
             <Card.Body gap="2">
               <Flex
