@@ -1,61 +1,94 @@
-import { Box, Button, Flex, Stack, ClientOnly, IconButton, Skeleton } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Flex,
+  Stack,
+  ClientOnly,
+  IconButton,
+  Skeleton,
+} from "@chakra-ui/react";
+import { Link, useLocation } from "react-router-dom";
 import { useColorMode } from "@/components/ui/color-mode";
 import { LuMoon, LuSun } from "react-icons/lu";
+import { useState, useEffect } from "react";
 
 export function Navbar() {
   const { toggleColorMode, colorMode } = useColorMode();
+  const [isSticky, setIsSticky] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const links = [
+    { path: "/", label: "Home" },
+    { path: "/events", label: "Events" },
+    { path: "/schedule", label: "Schedule" },
+    { path: "/booking", label: "Booking" },
+    { path: "/contact-us", label: "Contact Us" },
+    { path: "/about-us", label: "About Us" },
+  ];
 
   return (
-    <Box width="100%" bg="black.800" px={4} py={2} my={5}>
+    <Box
+      width="100%"
+      position="sticky"
+      top={0}
+      zIndex={1000}
+      bg={colorMode === "light" ? "white" : "black"}
+      px={14}
+      py={isSticky ? 5 : 5}
+      boxShadow={isSticky ? "md" : "none"}
+      transition="all 0.2s ease"
+    >
       <Flex justify="space-between" align="center" width="100%">
         {/* Navigation links */}
+        <Stack
+          direction={{ base: "column", md: "row" }}
+          spacing={3}
+          align="center"
+          wrap="wrap"
+        >
+          {links.map((link) => (
+            <Link key={link.path} to={link.path}>
+              <Button
+                variant={location.pathname === link.path ? "solid" : "ghost"}
+                colorScheme="whiteAlpha"
+              >
+                {link.label}
+              </Button>
+            </Link>
+          ))}
+        </Stack>
+
+        {/* Toggle Button and Admin login */}
         <Stack
           direction={{ base: "column", md: "row" }}
           spacing={4}
           align="center"
           wrap="wrap"
         >
-          <Link to="/">
-            <Button variant="ghost" colorScheme="whiteAlpha">Home</Button>
+          <Link to="/admin">
+            <Button>Login as Admin</Button>
           </Link>
-          <Link to="/events">
-            <Button variant="ghost" colorScheme="whiteAlpha">Events</Button>
-          </Link>
-          <Link to="/schedule">
-            <Button variant="ghost" colorScheme="whiteAlpha">Schedule</Button>
-          </Link>
-          <Link to="/booking">
-            <Button variant="ghost" colorScheme="whiteAlpha">Booking</Button>
-          </Link>
-          <Link to="/contact-us">
-            <Button variant="ghost" colorScheme="whiteAlpha">Contact Us</Button>
-          </Link>
-          <Link to="/about-us">
-            <Button variant="ghost" colorScheme="whiteAlpha">About Us</Button>
-          </Link>
-        </Stack>
-
-        {/* Toggle Button on right */}
-        <Stack
-            direction={{ base: "column", md: "row" }}
-            spacing={4}
-            align="center"
-            wrap="wrap"
-        >
-        <Button>
-            Login as Admin
-        </Button>
-        <ClientOnly fallback={<Skeleton boxSize="8" />}>
-            <IconButton onClick={toggleColorMode} variant="outline" size="sm">
-                {colorMode === "light" ? <LuSun /> : <LuMoon />}
+          <ClientOnly fallback={<Skeleton boxSize="8" />}>
+            <IconButton
+              onClick={toggleColorMode}
+              variant="outline"
+              size="sm"
+              aria-label="Toggle color mode"
+            >
+              {colorMode === "light" ? <LuSun /> : <LuMoon />}
             </IconButton>
-        </ClientOnly>
+          </ClientOnly>
         </Stack>
       </Flex>
     </Box>
   );
 }
-
-
-
