@@ -74,7 +74,7 @@ export function Navbar() {
           align="center"
           wrap="wrap"
         >
-          <Link to="/admin">
+          <Link to="/login">
             <Button>Login as Admin</Button>
           </Link>
           <ClientOnly fallback={<Skeleton boxSize="8" />}>

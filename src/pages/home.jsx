@@ -146,9 +146,11 @@ const services = [
                 <Blockquote.Content>
                 Sto. Tomas de Villanueva parish church in Danao stands as one of the oldest churches found in the Philippines. It was originally constructed in 1755 and its construction was credited to Fr. Manuel de Santa Barbara. The church was made up of numerous materials including sugar cane and cut coral stones from the sea which was a common building material for churches constructed near the shoreline during that period. Historical accounts about Danao mentioned that the church was opened to worship in 1824 under Recollect administration.
                 </Blockquote.Content>
-                <Button bg={"black"} color={"white"}>
-                  Learn more
-                </Button>
+                <a href="#/about-us">
+                  <Button bg={"black"} color={"white"}>
+                    Learn more
+                  </Button>
+                </a>
               </Blockquote.Root>
             </Box>
   

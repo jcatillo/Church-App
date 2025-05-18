@@ -239,21 +239,22 @@ export function Booking() {
               <Field.Label>
                 Select date<span style={{ color: "red" }}>*</span>
               </Field.Label>
-              <Controller
-                control={control}
-                name="date"
-                rules={{ required: "Date is required" }}
-                render={({ field }) => (
-                  <DatePicker
-                    placeholderText="Select date"
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
-                    dateFormat="yyyy/MM/dd"
-                    customInput={<Input />}
-                    minDate={new Date()}
-                  />
-                )}
-              />
+              <form autoComplete="off">
+                <Controller
+                  control={control}
+                  name="date"
+                  render={({ field }) => (
+                    <DatePicker
+                      {...field}
+                      selected={field.value}
+                      onChange={(date) => field.onChange(date)}
+                      dateFormat="yyyy/MM/dd"
+                      customInput={<Input autoComplete="off" />}
+                      minDate={new Date()}
+                    />
+                  )}
+                />
+              </form>
               <Field.ErrorText>
                 {errors.date && errors.date.message}
               </Field.ErrorText>
@@ -263,24 +264,27 @@ export function Booking() {
               <Field.Label>
                 Select Time<span style={{ color: "red" }}>*</span>
               </Field.Label>
-              <Controller
-                control={control}
-                name="time"
-                rules={{ required: "Time is required" }}
-                render={({ field }) => (
-                  <DatePicker
-                    placeholderText="Select Time"
-                    selected={field.value}
-                    onChange={(date) => field.onChange(date)}
-                    showTimeSelect
-                    showTimeSelectOnly
-                    timeIntervals={15}
-                    timeCaption="Time"
-                    dateFormat="h:mm aa"
-                    customInput={<Input />}
-                  />
-                )}
-              />
+
+              <form autoComplete="off">
+                <Controller
+                  control={control}
+                  name="time"
+                  rules={{ required: "Time is required" }}
+                  render={({ field }) => (
+                    <DatePicker
+                      placeholderText="Select Time"
+                      selected={field.value}
+                      onChange={(date) => field.onChange(date)}
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={15}
+                      timeCaption="Time"
+                      dateFormat="h:mm aa"
+                      customInput={<Input />}
+                    />
+                  )}
+                />
+              </form>
               <Field.ErrorText>
                 {errors.date && errors.date.message}
               </Field.ErrorText>
