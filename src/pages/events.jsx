@@ -111,8 +111,21 @@ function splitEventsByDate(events) {
   const upcomingEvents = [];
 
   for (const event of events) {
-    // Convert event date and time to a full Date object
-    const eventDateTime = new Date(`${event.date} ${event.time}`);
+    // Parse the date string in MM-DD-YYYY format
+    const [month, day, year] = event.date.split("-").map(Number);
+    // Parse the time string
+    const [time, modifier] = event.time.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    // Convert 12-hour format to 24-hour format
+    if (modifier === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    // Create Date object (months are 0-indexed in JavaScript)
+    const eventDateTime = new Date(year, month - 1, day, hours, minutes);
 
     if (eventDateTime < now) {
       pastEvents.push(event);
