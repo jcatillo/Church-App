@@ -90,7 +90,6 @@ export function Booking() {
         p={6}
         borderRadius="md"
         boxShadow="md"
-        bg="white"
       >
         <Heading size="3xl" mb={4} textAlign="center" fontWeight={"bold"}>
           Booking
