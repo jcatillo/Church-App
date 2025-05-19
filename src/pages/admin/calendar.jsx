@@ -27,8 +27,8 @@ import { SimpleModal } from "@/components/SimpleModal";
 import { CiEdit } from "react-icons/ci";
 import { LuCalendarClock } from "react-icons/lu";
 import { TiDocumentText } from "react-icons/ti";
-import { MdSave, MdCancel } from "react-icons/md";
-import { getCalendar, addToCalendar, updateCalendarEvent } from "@/data/calendar";
+import { MdSave, MdCancel, MdDelete } from "react-icons/md";
+import { getCalendar, addToCalendar, updateCalendarEvent, deleteCalendarEvent } from "@/data/calendar";
 
 export function Calendar() {
   const [calendarEvents, setCalendarEvents] = useState([]);
@@ -138,6 +138,23 @@ export function Calendar() {
         ...calendarEvent,
       });
 
+      const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this event?")) {
+          try {
+            // Remove from Firestore
+            await deleteCalendarEvent(calendarEvent.id);
+            // Remove from calendar
+            eventsServicePlugin.remove(calendarEvent.id);
+            // Refresh events
+            const updatedEvents = await getCalendar();
+            setCalendarEvents(updatedEvents);
+          } catch (error) {
+            console.error("Error deleting event:", error);
+            // Optionally show error toast
+          }
+        }
+      };
+
       const handleChange = (e) => {
         const { name, value } = e.target;
         setEditedEvent((prev) => ({
@@ -200,14 +217,24 @@ export function Calendar() {
                 </IconButton>
               </HStack>
             ) : (
-              <IconButton
-                aria-label="Edit"
-                size="sm"
-                color={"black"}
-                onClick={() => setIsEditing(true)}
-              >
-                <CiEdit />
-              </IconButton>
+              <HStack>
+                <IconButton
+                  aria-label="Edit"
+                  size="sm"
+                  color={"black"}
+                  onClick={() => setIsEditing(true)}
+                >
+                  <CiEdit />
+                </IconButton>
+                <IconButton
+                  aria-label="Delete"
+                  size="sm"
+                  color={"red"}
+                  onClick={handleDelete}
+                >
+                  <MdDelete />
+                </IconButton>
+              </HStack>
             )}
           </Flex>
 
