@@ -52,7 +52,7 @@ export function AdminHome() {
       title: "Create Events",
       description: "Create and manage church events and activities",
       icon: FaCalendarAlt,
-      path: "/admin/events",
+      path: "/admin/calendar",
     },
   ];
 
