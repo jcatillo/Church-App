@@ -1,4 +1,11 @@
-import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 const bookingsCollection = collection(db, "Calendar");
@@ -13,6 +20,24 @@ export const getCalendar = async () => {
         id: doc.id,
       };
     });
+    return filteredData;
+  } catch (err) {
+    console.error("Error fetching bookings:", err);
+    throw err;
+  }
+};
+export const getEvents = async () => {
+  try {
+    const data = await getDocs(bookingsCollection);
+    const filteredData = data.docs
+      .filter((doc) => doc.data().calendarId === "event")
+      .map((doc) => {
+        const event = doc.data();
+        return {
+          ...event,
+          id: doc.id,
+        };
+      });
     return filteredData;
   } catch (err) {
     console.error("Error fetching bookings:", err);
