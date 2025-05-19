@@ -383,7 +383,7 @@ export function Calendar() {
         maxW="1200px"
       >
         <Box w="100%" h={["400px", "600px"]} overflow="auto">
-          <Button mb={5} onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
+          <Button color={'white'} bg={'black'} mb={5} onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
             Add Schedule
           </Button>
 
@@ -399,123 +399,105 @@ export function Calendar() {
           )}
 
           <SimpleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-            <Box position="relative">
-              {isSaving && (
-                <Box
-                  position="absolute"
-                  top="0"
-                  left="0"
-                  right="0"
-                  bottom="0"
-                  bg="rgba(0, 0, 0, 0.5)"
-                  zIndex="10"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <VStack bg="white" p={6} borderRadius="md" boxShadow="lg">
-                    <Spinner size="lg" color="blue.500" thickness="4px" />
-                    <Text fontSize="lg" fontWeight="medium">
-                      Adding Schedule. Please Wait.
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
-              <Heading size="md" mb={4} textAlign="center">
-                Add New Schedule
-              </Heading>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label className="block mb-2">
-                    Title:
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded mt-1"
-                      required
-                    />
-                  </label>
-                </div>
+  <div className="relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-auto p-8">
+    {isSaving && (
+      <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center rounded-lg backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-700 text-base font-medium">Adding Schedule. Please wait...</p>
+        </div>
+      </div>
+    )}
 
-                <div className="mb-4">
-                  <label className="block mb-2">
-                    Start:
-                    <input
-                      type="datetime-local"
-                      name="start"
-                      value={formData.start}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded mt-1"
-                      required
-                    />
-                  </label>
-                </div>
+    <Heading as="h2" size="xl" textAlign="center" mb={6} fontWeight="semibold" color="gray.800">Add New Schedule</Heading>
 
-                <div className="mb-4">
-                  <label className="block mb-2">
-                    End:
-                    <input
-                      type="datetime-local"
-                      name="end"
-                      value={formData.end}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded mt-1"
-                      required
-                    />
-                  </label>
-                </div>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
 
-                <div className="mb-4">
-                  <label className="block mb-2">
-                    Description:
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded mt-1"
-                      rows="3"
-                    />
-                  </label>
-                </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Start</label>
+        <input
+          type="datetime-local"
+          name="start"
+          value={formData.start}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
 
-                <div className="mb-4">
-                  <label className="block mb-2">
-                    Calendar:
-                    <select
-                      name="calendarId"
-                      value={formData.calendarId}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border rounded mt-1"
-                    >
-                      <option value="">Default</option>
-                      <option value="mass">Mass</option>
-                      <option value="event">Event</option>
-                    </select>
-                  </label>
-                </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">End</label>
+        <input
+          type="datetime-local"
+          name="end"
+          value={formData.end}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
 
-                <div className="flex justify-end gap-2 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 border rounded"
-                    disabled={isSaving}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                    disabled={isSaving}
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </Box>
-          </SimpleModal>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleInputChange}
+          rows="3"
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        ></textarea>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Calendar</label>
+        <select
+          name="calendarId"
+          value={formData.calendarId}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Default</option>
+          <option value="mass">Mass</option>
+          <option value="event">Event</option>
+        </select>
+      </div>
+
+      <HStack justify="flex-end" spacing={3} pt={4}>
+        <Button
+            variant="outline"
+            colorScheme="gray"
+            onClick={() => setIsModalOpen(false)}
+            isDisabled={isSaving}
+            bg={'red'}
+            color={'white'}
+        >
+            Cancel
+        </Button>
+        <Button
+            colorScheme="blue"
+            type="submit"
+            isLoading={isSaving}
+            loadingText="Saving"
+            bg={'green'}
+        >
+            Save
+        </Button>
+        </HStack>
+    </form>
+  </div>
+</SimpleModal>
+
         </Box>
       </Flex>
     </VStack>
