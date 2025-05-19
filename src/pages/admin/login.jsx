@@ -6,17 +6,20 @@ import {
   Heading,
   Text,
   Link,
-  Field
+  Field,
+  Spinner,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { auth } from "@/config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-
+import { useState } from "react";
+import { set } from "date-fns";
 
 export function Login() {
-      const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
 
   const {
     register,
@@ -27,34 +30,37 @@ export function Login() {
   const onSubmit = async (data) => {
     const { email, password } = data;
 
-    try{
-        await signInWithEmailAndPassword(auth, email, password);
-        console.log(auth.currentUser);
-    
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log(auth.currentUser);
 
-        if (auth.currentUser) {
-            toaster.create({
-                title: "Login successful.",
-                description: "You have logged in successfully.",
-                type: "success",
-            });
+      if (auth.currentUser) {
+        toaster.create({
+          title: "Login successful.",
+          description: "You have logged in successfully.",
+          type: "success",
+        });
 
-            setTimeout(() => {
-                navigate("/admin/home");
-            }, 1500); // Adjust delay as needed
-        } else {
-            toaster.create({
-                title: "Login failed.",
-                description: "Please provide the correct credentials.",
-                type: "error",
-            });
-        }
-    }catch(err){
-            toaster.create({
-                title: "Login failed.",
-                description: "Please provide the correct credentials.",
-                type: "error",
-            });    }
+        setTimeout(() => {
+          navigate("/admin/home");
+        }, 1500);
+      } else {
+        setLoading(false);
+        toaster.create({
+          title: "Login failed.",
+          description: "Please provide the correct credentials.",
+          type: "error",
+        });
+      }
+    } catch (err) {
+      setLoading(false);
+      toaster.create({
+        title: "Login failed.",
+        description: "Please provide the correct credentials.",
+        type: "error",
+      });
+    }
   };
 
   return (
@@ -67,7 +73,7 @@ export function Login() {
       borderRadius="lg"
       boxShadow="lg"
     >
-        <Toaster/>
+      <Toaster />
       <Heading mb={6} textAlign="center" size="lg">
         Login as Admin
       </Heading>
@@ -105,7 +111,12 @@ export function Login() {
             </Field.ErrorText>
           </Field.Root>
 
-          <Button type="submit" colorScheme="blue">
+          <Button 
+            type="submit" 
+            colorScheme="blue" 
+            isLoading={isLoading}
+            loadingText="Logging in..."
+          >
             Login
           </Button>
         </Stack>
