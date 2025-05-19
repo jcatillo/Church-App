@@ -46,7 +46,7 @@ export function AdminHome() {
       title: "Manage Bookings",
       description: "View, approve, and manage all church facility bookings",
       icon: FaBookmark,
-      path: "/admin/bookings",
+      path: "/admin/booking",
     },
     {
       title: "Create Events",
