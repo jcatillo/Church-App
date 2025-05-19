@@ -413,7 +413,7 @@ export function Calendar() {
 
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1" style={{color: "black"}}>Title</label>
         <input
           type="text"
           name="title"
@@ -421,11 +421,12 @@ export function Calendar() {
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          style={{backgroundColor: "transparent", color: 'black'}}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Start</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1" style={{color: "black"}}>Start</label>
         <input
           type="datetime-local"
           name="start"
@@ -433,11 +434,12 @@ export function Calendar() {
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          style={{backgroundColor: "transparent", color: 'black'}}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">End</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1" style={{color: "black"}}>End</label>
         <input
           type="datetime-local"
           name="end"
@@ -445,27 +447,30 @@ export function Calendar() {
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          style={{backgroundColor: "transparent", color: 'black'}}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1" style={{color: "black"}}>Description</label>
         <textarea
           name="description"
           value={formData.description}
           onChange={handleInputChange}
           rows="3"
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          style={{backgroundColor: "transparent", color: 'black'}}
         ></textarea>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Calendar</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1" style={{color: "black"}}>Calendar</label>
         <select
           name="calendarId"
           value={formData.calendarId}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{backgroundColor: "transparent"}}
         >
           <option value="">Default</option>
           <option value="mass">Mass</option>

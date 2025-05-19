@@ -1,6 +1,7 @@
 import { IconButton } from "@chakra-ui/react";
 import { IoMdClose } from "react-icons/io";
 import React from "react";
+import { color } from "framer-motion";
 
 export function SimpleModal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
@@ -9,7 +10,7 @@ export function SimpleModal({ isOpen, onClose, children }) {
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <div style={styles.header}>
-          <IconButton onClick={onClose} aria-label="Close modal">
+          <IconButton bg='black' color={'white'} onClick={onClose} aria-label="Close modal">
             <IoMdClose />
         </IconButton>
         </div>
