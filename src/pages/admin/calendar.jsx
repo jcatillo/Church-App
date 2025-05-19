@@ -8,6 +8,8 @@ import {
 } from "@schedule-x/calendar";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
+import { createEventRecurrencePlugin } from "@schedule-x/event-recurrence";
+
 import "@schedule-x/theme-default/dist/index.css";
 import {
   Box,
@@ -29,6 +31,8 @@ import { LuCalendarClock } from "react-icons/lu";
 import { TiDocumentText } from "react-icons/ti";
 import { MdSave, MdCancel, MdDelete } from "react-icons/md";
 import { getCalendar, addToCalendar, updateCalendarEvent, deleteCalendarEvent } from "@/data/calendar";
+import { FaRegCalendarPlus } from "react-icons/fa6";
+
 
 export function Calendar() {
   const [calendarEvents, setCalendarEvents] = useState([]);
@@ -93,7 +97,7 @@ export function Calendar() {
       createViewMonthAgenda(),
     ],
     events: [],
-    plugins: [createEventModalPlugin(), eventsServicePlugin],
+    plugins: [createEventModalPlugin(), eventsServicePlugin, createEventRecurrencePlugin()],
     defaultView: "week",
   });
 
@@ -383,9 +387,9 @@ export function Calendar() {
         maxW="1200px"
       >
         <Box w="100%" h={["400px", "600px"]} overflow="auto">
-          <Button color={'white'} bg={'black'} mb={5} onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
-            Add Schedule
-          </Button>
+          <IconButton p={5} color={'white'} bg={'black'} mb={5} onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
+            <FaRegCalendarPlus /> Add
+          </IconButton>
 
           {isLoading ? (
             <Center h="400px">
@@ -409,7 +413,7 @@ export function Calendar() {
       </div>
     )}
 
-    <Heading as="h2" size="xl" textAlign="center" mb={6} fontWeight="semibold" color="gray.800">Add New Schedule</Heading>
+    <Heading as="h2" size="xl" textAlign="center" mb={6} fontWeight="semibold" color="gray.800">Add New Schedule/Event</Heading>
 
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
@@ -471,6 +475,7 @@ export function Calendar() {
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           style={{backgroundColor: "transparent"}}
+          aria-placeholder="Select"
         >
           <option value="">Default</option>
           <option value="mass">Mass</option>

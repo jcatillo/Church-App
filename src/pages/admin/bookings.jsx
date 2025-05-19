@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addBooking, getBookings } from "@/data/bookings";
+import { addBooking, getBookings, updateBooking } from "@/data/bookings";
 import {
   Box,
   Flex,
@@ -12,10 +12,18 @@ import {
   HStack,
   Stack,
   Input,
+  Select,
+  Portal,
+  Field,
 } from "@chakra-ui/react";
-import { LuCheck, LuX, LuPencil } from "react-icons/lu";
+import { LuCheck, LuX, LuPencil, LuSave } from "react-icons/lu";
 import { useColorModeValue } from "@/components/ColorMode";
-import { updateBooking } from "@/data/bookings";
+import { useForm, Controller } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { createListCollection } from "@chakra-ui/react";
+import { Toaster, toaster } from "@/components/ui/toaster";
+
 
 export function AdminBooking() {
   const [bookings, setBookings] = useState([]);
@@ -23,7 +31,15 @@ export function AdminBooking() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [searchQuery, setSearchQuery] = useState("");
   const colorMode = useColorModeValue();
-  const [isEditMode, setEditMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const toast = toaster;
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +48,14 @@ export function AdminBooking() {
         const booking = await getBookings();
         setBookings(booking);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch bookings:", err);
+        toast.create({
+          title: "Error",
+          description: "Failed to load bookings. Please try again.",
+          type: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       } finally {
         setLoading(false);
       }
@@ -40,24 +63,107 @@ export function AdminBooking() {
 
     fetchData();
   }, []);
+
   const acceptBooking = async (data, status) => {
     try {
       setLoading(true);
-      await updateBooking({ ...data, status: status });
-
-      setBookings((prev) => {
-        const updated = prev.map((booking) =>
+      await updateBooking({ ...data, status });
+      setBookings((prev) =>
+        prev.map((booking) =>
           booking.id === data.id ? { ...booking, status } : booking
-        );
-        console.log(updated); // log the updated version
-        return updated;
+        )
+      );
+      toast.create({
+        title: "Success",
+        description: `Booking ${status === "accepted" ? "accepted" : "cancelled"} successfully.`,
+        type: "success",
+        duration: 5000,
+        isClosable: true,
       });
     } catch (error) {
-      console.error("Failed to accept booking:", error);
+      console.error("Failed to update booking:", error);
+      toast.create({
+        title: "Error",
+        description: "Failed to update booking. Please try again.",
+        type: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  const startEditing = (booking) => {
+    setEditingId(booking.id);
+    reset({
+      fname: booking.fname,
+      lname: booking.lname,
+      email: booking.email,
+      phone: booking.phone,
+      bookingType: booking.bookingType,
+      date: booking.date ? new Date(booking.date) : null,
+      time: booking.time ? new Date(`1970-01-01T${booking.time}:00`) : null,
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    reset({});
+  };
+
+  const saveEditing = async (data) => {
+    try {
+      setLoading(true);
+      const formattedData = {
+        id: editingId,
+        fname: data.fname,
+        lname: data.lname,
+        email: data.email,
+        phone: data.phone,
+        bookingType: data.bookingType,
+        date: data.date ? data.date.toISOString().split("T")[0] : "",
+        time: data.time ? data.time.toTimeString().slice(0, 5) : "",
+        status: bookings.find((b) => b.id === editingId).status,
+      };
+      await updateBooking(formattedData);
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.id === editingId ? { ...booking, ...formattedData } : booking
+        )
+      );
+      setEditingId(null);
+      reset({});
+      toast.create({
+        title: "Success",
+        description: "Booking updated successfully.",
+        type: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Failed to save booking:", error);
+      toast.create({
+        title: "Error",
+        description: "Failed to save booking. Please try again.",
+        type: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const types = createListCollection({
+    items: [
+      { label: "Wedding", value: "wedding" },
+      { label: "Wake Mass", value: "wake mass" },
+      { label: "Mass", value: "mass" },
+      { label: "Deliverance", value: "deliverance" },
+      { label: "Baptismal", value: "baptismal" },
+    ],
+  });
 
   const headers = [
     "Name",
@@ -72,10 +178,11 @@ export function AdminBooking() {
 
   const filteredHeaders = headers.filter((header) => {
     if (header === "Action" && activeTab === "cancelled") {
-      return false; // skip Action for cancelled tab
+      return false;
     }
     return true;
   });
+
   const filteredBookings = bookings.filter((booking) => {
     const matchesTab =
       (activeTab === "upcoming" &&
@@ -98,6 +205,7 @@ export function AdminBooking() {
 
   return (
     <Container maxW="container.xl" py={8}>
+        <Toaster/>
       <Stack spacing={6}>
         <Flex justify="space-between" align="center">
           <Heading>Booking Management</Heading>
@@ -156,12 +264,6 @@ export function AdminBooking() {
                     {header}
                   </Text>
                 ))}
-
-                {activeTab === "pending"
-                  ? "Action"
-                  : activeTab === "accepted"
-                  ? status
-                  : ""}
               </Grid>
               {filteredBookings.map((data) => (
                 <Grid
@@ -175,35 +277,219 @@ export function AdminBooking() {
                     bg: "gray.50",
                   }}
                 >
-                  <Text
-                    noOfLines={1}
-                    fontSize="sm"
-                  >{`${data.fname} ${data.lname}`}</Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.email}
-                  </Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.phone}
-                  </Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.bookingType}
-                  </Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.date}
-                  </Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.time}
-                  </Text>
-                  <Text noOfLines={1} fontSize="sm">
-                    {data.status}
-                  </Text>
+                  {editingId === data.id ? (
+                    <>
+                      <HStack>
+                        <Field.Root invalid={!!errors.fname}>
+                          <Controller
+                            name="fname"
+                            control={control}
+                            rules={{ required: "First name is required" }}
+                            render={({ field }) => (
+                              <Input
+                                size="sm"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                placeholder="First name"
+                                isInvalid={!!errors.fname}
+                              />
+                            )}
+                          />
+                          <Field.ErrorText>{errors.fname?.message}</Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root invalid={!!errors.lname}>
+                          <Controller
+                            name="lname"
+                            control={control}
+                            rules={{ required: "Last name is required" }}
+                            render={({ field }) => (
+                              <Input
+                                size="sm"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                placeholder="Last name"
+                                isInvalid={!!errors.lname}
+                              />
+                            )}
+                          />
+                          <Field.ErrorText>{errors.lname?.message}</Field.ErrorText>
+                        </Field.Root>
+                      </HStack>
+                      <Field.Root invalid={!!errors.email}>
+                        <Controller
+                          name="email"
+                          control={control}
+                          rules={{
+                            required: "Email is required",
+                            pattern: {
+                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                              message: "Invalid email address",
+                            },
+                          }}
+                          render={({ field }) => (
+                            <Input
+                              size="sm"
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              placeholder="Email"
+                              isInvalid={!!errors.email}
+                            />
+                          )}
+                        />
+                        <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+                      </Field.Root>
+                      <Field.Root invalid={!!errors.phone}>
+                        <Controller
+                          name="phone"
+                          control={control}
+                          rules={{
+                            required: "Phone is required",
+                            pattern: {
+                              value: /^\d{3}-\d{3}-\d{4}$/,
+                              message: "Phone must be ###-###-####",
+                            },
+                          }}
+                          render={({ field }) => (
+                            <Input
+                              size="sm"
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              placeholder="###-###-####"
+                              isInvalid={!!errors.phone}
+                            />
+                          )}
+                        />
+                        <Field.ErrorText>{errors.phone?.message}</Field.ErrorText>
+                      </Field.Root>
+                      <Field.Root invalid={!!errors.bookingType}>
+                        <Controller
+                          name="bookingType"
+                          control={control}
+                          rules={{ required: "Booking type is required" }}
+                          render={({ field }) => (
+                            <Select.Root
+                              size="sm"
+                              value={field.value}
+                              onValueChange={(item) => field.onChange(item.value)}
+                              collection={types}
+                              isInvalid={!!errors.bookingType}
+                            >
+                              <Select.HiddenSelect name={field.name} ref={field.ref} />
+                              <Select.Control>
+                                <Select.Trigger>
+                                  <Select.ValueText placeholder="Select type" />
+                                </Select.Trigger>
+                                <Select.IndicatorGroup>
+                                  <Select.Indicator />
+                                </Select.IndicatorGroup>
+                              </Select.Control>
+                              <Portal>
+                                <Select.Positioner>
+                                  <Select.Content>
+                                    {types.items.map((type) => (
+                                      <Select.Item item={type} key={type.value}>
+                                        {type.label}
+                                        <Select.ItemIndicator />
+                                      </Select.Item>
+                                    ))}
+                                  </Select.Content>
+                                </Select.Positioner>
+                              </Portal>
+                            </Select.Root>
+                          )}
+                        />
+                        <Field.ErrorText>{errors.bookingType?.message}</Field.ErrorText>
+                      </Field.Root>
+                      <Field.Root invalid={!!errors.date}>
+                        <Controller
+                          name="date"
+                          control={control}
+                          rules={{ required: "Date is required" }}
+                          render={({ field }) => (
+                            <DatePicker
+                              selected={field.value}
+                              onChange={field.onChange}
+                              minDate={new Date()}
+                              dateFormat="yyyy-MM-dd"
+                              customInput={<Input size="sm" isInvalid={!!errors.date} />}
+                              placeholderText="Select date"
+                            />
+                          )}
+                        />
+                        <Field.ErrorText>{errors.date?.message}</Field.ErrorText>
+                      </Field.Root>
+                      <Field.Root invalid={!!errors.time}>
+                        <Controller
+                          name="time"
+                          control={control}
+                          rules={{ required: "Time is required" }}
+                          render={({ field }) => (
+                            <DatePicker
+                              selected={field.value}
+                              onChange={field.onChange}
+                              showTimeSelect
+                              showTimeSelectOnly
+                              timeIntervals={15}
+                              timeFormat="HH:mm"
+                              dateFormat="HH:mm"
+                              customInput={<Input size="sm" isInvalid={!!errors.time} />}
+                              placeholderText="Select time"
+                            />
+                          )}
+                        />
+                        <Field.ErrorText>{errors.time?.message}</Field.ErrorText>
+                      </Field.Root>
+                    </>
+                  ) : (
+                    <>
+                      <Text noOfLines={1} fontSize="sm">{`${data.fname} ${data.lname}`}</Text>
+                      <Text noOfLines={1} fontSize="sm">{data.email}</Text>
+                      <Text noOfLines={1} fontSize="sm">{data.phone}</Text>
+                      <Text noOfLines={1} fontSize="sm">{data.bookingType}</Text>
+                      <Text noOfLines={1} fontSize="sm">{data.date}</Text>
+                      <Text noOfLines={1} fontSize="sm">{data.time}</Text>
+                    </>
+                  )}
+                  <Text noOfLines={1} fontSize="sm">{data.status}</Text>
                   <HStack spacing={3} justify="flex-start">
-                    {data.status === "pending" ? (
+                    {editingId === data.id ? (
+                      <>
+                        <Button
+                          size="sm"
+                          leftIcon={<LuSave />}
+                          bgColor="blue.500"
+                          color="white"
+                          variant="solid"
+                          minW="90px"
+                          fontSize="sm"
+                          onClick={handleSubmit(saveEditing)}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          leftIcon={<LuX />}
+                          bgColor="gray.500"
+                          color="white"
+                          variant="solid"
+                          minW="90px"
+                          fontSize="sm"
+                          onClick={cancelEditing}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : data.status === "pending" ? (
                       <>
                         <Button
                           size="sm"
                           leftIcon={<LuCheck />}
-                          bgColor={"green"}
+                          bgColor="green.500"
+                          color="white"
                           variant="solid"
                           minW="90px"
                           fontSize="sm"
@@ -214,16 +500,19 @@ export function AdminBooking() {
                         <Button
                           size="sm"
                           bgColor="blue.500"
+                          color="white"
                           leftIcon={<LuPencil />}
                           variant="solid"
                           minW="90px"
                           fontSize="sm"
+                          onClick={() => startEditing(data)}
                         >
                           Edit
                         </Button>
                         <Button
                           size="sm"
-                          bgColor="red"
+                          bgColor="red.500"
+                          color="white"
                           leftIcon={<LuX />}
                           variant="solid"
                           minW="90px"
@@ -235,20 +524,22 @@ export function AdminBooking() {
                       </>
                     ) : data.status === "accepted" ? (
                       <>
-                        {" "}
                         <Button
                           size="sm"
                           bgColor="blue.500"
+                          color="white"
                           leftIcon={<LuPencil />}
                           variant="solid"
                           minW="90px"
                           fontSize="sm"
+                          onClick={() => startEditing(data)}
                         >
                           Edit
                         </Button>
                         <Button
                           size="sm"
-                          bgColor="red"
+                          bgColor="red.500"
+                          color="white"
                           leftIcon={<LuX />}
                           variant="solid"
                           minW="90px"
@@ -259,7 +550,7 @@ export function AdminBooking() {
                         </Button>
                       </>
                     ) : data.status === "cancelled" ? (
-                      <>{/* cancelled (maybe empty) */}</>
+                      <></>
                     ) : null}
                   </HStack>
                 </Grid>

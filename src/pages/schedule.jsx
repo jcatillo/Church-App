@@ -10,6 +10,8 @@ import { createEventModalPlugin } from "@schedule-x/event-modal";
 import "@schedule-x/theme-default/dist/index.css";
 import { Box, Flex, VStack, Button, Spinner } from "@chakra-ui/react";
 import { getCalendar } from "@/data/calendar";
+import { createEventRecurrencePlugin } from "@schedule-x/event-recurrence";
+
 
 export function Schedule() {
   const [calendars, setCalendars] = useState([]);
@@ -53,7 +55,7 @@ export function Schedule() {
       createViewMonthAgenda(),
     ],
     events: [], // Initialize empty; update dynamically
-    plugins: [createEventModalPlugin()],
+    plugins: [createEventModalPlugin(), createEventRecurrencePlugin()],
     defaultView: "week",
   });
 
@@ -70,7 +72,8 @@ export function Schedule() {
           start: calendar.start,
           end: calendar.end,
           description: calendar.description || "No description",
-          calendarId: calendar.calendarType === "mass" ? "mass" : "event",
+          calendarId: calendar.calendarId === "mass" ? "mass" : "event",
+          rrule: calendar.rrule
         }));
 
         setEvents(formattedEvents);

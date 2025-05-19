@@ -68,7 +68,7 @@ export function Booking() {
     items: [
       { label: "Wedding", value: "wedding" },
       { label: "Wake Mass", value: "wake mass" },
-      { label: "Healing Mass", value: "healing mass" },
+      { label: "Mass", value: "mass" },
       { label: "Deliverance", value: "deliverance" },
       { label: "Baptismal", value: "baptismal" },
     ],

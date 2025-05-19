@@ -44,9 +44,9 @@ const services = [
       "https://images.pexels.com/photos/17120314/pexels-photo-17120314/free-photo-of-baptism-of-newborn-baby.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
   },
   {
-    title: "Healing Mass",
+    title: "Mass",
     description:
-      "A spiritual gathering focused on prayer for healing, peace, and restoration of health.",
+      "The central act of worship in the Catholic Church, where the faithful gather to celebrate the Eucharist, receive spiritual nourishment, and strengthen their faith through prayer and community.",
     image:
       "https://christthekingparish.ph/wp-content/uploads/2016/09/healing-mass-2.jpg"
   },
