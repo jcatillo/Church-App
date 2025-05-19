@@ -4,6 +4,11 @@ import { ClientOnly, IconButton, Skeleton } from "@chakra-ui/react"
 import { useColorMode } from "@/components/ui/color-mode"
 import { LuMoon, LuSun } from "react-icons/lu"
 
+export const useColorModeValue = () => {
+  const { colorMode } = useColorMode()
+  return colorMode
+}
+
 const Demo = () => {
   const { toggleColorMode, colorMode } = useColorMode()
   return (
@@ -14,3 +19,5 @@ const Demo = () => {
     </ClientOnly>
   )
 }
+
+export default Demo

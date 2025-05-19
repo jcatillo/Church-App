@@ -8,3 +8,14 @@
     margin-top: 1.5vh;
   }
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fadein {
+  animation: fadeIn 0.5s ease-in;
+}

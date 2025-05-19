@@ -1,4 +1,10 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 const bookingsCollection = collection(db, "Booking");
@@ -20,12 +26,12 @@ export const getBookings = async () => {
 export const addBooking = async (data) => {
   // Get the date object
   const dateObj = new Date(data.date);
-  
-  // Format the date in YYYY-MM-DD format preserving the selected date 
+
+  // Format the date in YYYY-MM-DD format preserving the selected date
   // regardless of timezone by using local date methods
   const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
 
   // Process the time
@@ -33,7 +39,6 @@ export const addBooking = async (data) => {
   const hours = timeDate.getHours().toString().padStart(2, "0");
   const minutes = timeDate.getMinutes().toString().padStart(2, "0");
   const formattedTime = `${hours}:${minutes}`;
-
   try {
     await addDoc(bookingsCollection, {
       fname: data.firstName,
@@ -47,5 +52,17 @@ export const addBooking = async (data) => {
     });
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const updateBooking = async (newData) => {
+  try {
+    const bookingRef = doc(db, "Booking", newData.id);
+    const { id, ...fieldsToUpdate } = newData;
+
+    await updateDoc(bookingRef, fieldsToUpdate);
+    console.log("Booking updated");
+  } catch (error) {
+    console.error("Error updating booking:", error);
   }
 };

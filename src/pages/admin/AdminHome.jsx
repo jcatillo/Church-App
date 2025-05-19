@@ -9,11 +9,14 @@ import {
   HStack,
   Heading,
   Container,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { useColorMode } from "@/components/ui/color-mode";
 import { motion } from "framer-motion";
 import { FaCalendarAlt, FaBookmark } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 // Create motion wrapper
 const MotionBox = motion(Box);
@@ -22,6 +25,21 @@ export function AdminHome() {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time for initial data fetch
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleNavigation = (path) => {
+    setIsLoading(true);
+    navigate(path);
+  };
 
   const adminFeatures = [
     {
@@ -37,6 +55,20 @@ export function AdminHome() {
       path: "/admin/events",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <Center h="100vh">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    );
+  }
 
   return (
     <Container maxW="container.xl" py={10}>
@@ -86,7 +118,7 @@ export function AdminHome() {
                 <Button
                   colorScheme="blue"
                   size="lg"
-                  onClick={() => navigate(feature.path)}
+                  onClick={() => handleNavigation(feature.path)}
                   _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
                 >
                   Manage

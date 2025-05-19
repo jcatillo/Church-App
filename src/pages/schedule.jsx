@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
 import {
   createViewDay,
@@ -7,37 +7,16 @@ import {
   createViewMonthAgenda,
 } from "@schedule-x/calendar";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
-import { createEventsServicePlugin } from "@schedule-x/events-service";
 import "@schedule-x/theme-default/dist/index.css";
-import {
-  Box,
-  Flex,
-  VStack,
-  Button,
-  Heading,
-  Text,
-  Input,
-  Textarea,
-  Spinner,
-  Center,
-} from "@chakra-ui/react";
-import { SimpleModal } from "@/components/SimpleModal";
+import { Box, Flex, VStack, Button, Spinner } from "@chakra-ui/react";
 import { getCalendar } from "@/data/calendar";
 
 export function Schedule() {
-  const [calendarEvents, setCalendarEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [eventsServicePlugin] = useState(() => createEventsServicePlugin());
-  const [formData, setFormData] = useState({
-    title: "",
-    start: "",
-    end: "",
-    description: "",
-    calendarId: "",
-  });
+  const [calendars, setCalendars] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true); // Track loading state
 
-  // Initialize calendar with empty events
+  // Initialize the calendar app
   const calendar = useCalendarApp({
     calendars: {
       mass: {
@@ -73,90 +52,40 @@ export function Schedule() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    events: [],
-    plugins: [createEventModalPlugin(), eventsServicePlugin],
+    events: [], // Initialize empty; update dynamically
+    plugins: [createEventModalPlugin()],
     defaultView: "week",
   });
 
-  // Fetch calendar events
-  const fetchEvents = async () => {
-    try {
-      setIsLoading(true);
-      const data = await getCalendar();
-      setCalendarEvents(data);
-      console.log("Calendar data loaded:", data);
-    } catch (error) {
-      console.error("Error loading calendar data:", error);
-      setCalendarEvents([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Load initial events
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true); // Start loading
+      try {
+        const calendarsData = await getCalendar();
+        setCalendars(calendarsData);
 
-  // Add events to calendar
-  useEffect(() => {
-    if (calendarEvents.length > 0) {
-      // Clear existing events to avoid duplicates
-      eventsServicePlugin.clear();
-      calendarEvents.forEach((event) => {
-        eventsServicePlugin.add(event);
-      });
-    }
-  }, [calendarEvents, eventsServicePlugin]);
+        const formattedEvents = calendarsData.map((calendar) => ({
+          id: calendar.id,
+          title: calendar.title,
+          start: calendar.start,
+          end: calendar.end,
+          description: calendar.description || "No description",
+          calendarId: calendar.calendarType === "mass" ? "mass" : "event",
+        }));
 
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const newId = String(Date.now());
-    const newEvent = {
-      id: newId,
-      title: formData.title,
-      start: formData.start.replace("T", " "), // Convert to "YYYY-MM-DD HH:mm"
-      end: formData.end.replace("T", " "),
-      description: formData.description,
-      calendarId: formData.calendarId || undefined,
+        setEvents(formattedEvents);
+        if (calendar) {
+          calendar.events.set(formattedEvents); // Set events in ScheduleX
+        }
+      } catch (err) {
+        console.error("Failed to fetch calendars:", err);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
 
-    try {
-      // Placeholder: Replace with your actual API call to save the event
-      // Example: await saveCalendarEvent(newEvent);
-      console.log("Saving event to database:", newEvent);
-
-      // Immediately add to calendar for instant feedback
-      eventsServicePlugin.add(newEvent);
-
-      // Re-fetch events from database to ensure consistency
-      await fetchEvents();
-
-      // Close modal and reset form
-      setIsModalOpen(false);
-      setFormData({
-        title: "",
-        start: "",
-        end: "",
-        description: "",
-        calendarId: "",
-      });
-    } catch (error) {
-      console.error("Error saving event:", error);
-      // Optionally show error to user
-    }
-  };
+    fetchData();
+  }, [calendar]); // Depend on calendar
 
   return (
     <VStack spacing={5} align="center" justify="center" p={4} minH="100vh">
@@ -172,114 +101,13 @@ export function Schedule() {
         maxW="1200px"
       >
         <Box w="100%" h={["400px", "600px"]} overflow="auto">
-          <Button mb={5} onClick={() => setIsModalOpen(true)} isDisabled={isLoading}>
-            Add Schedule
-          </Button>
-
-          {isLoading ? (
-            <Center h="400px">
-              <VStack>
-                <Spinner size="xl" color="blue.500" thickness="4px" />
-                <Text mt={4}>Loading calendar data...</Text>
-              </VStack>
-            </Center>
+          {loading ? (
+            <Flex justify="center" align="center" h="100%">
+              <Spinner size="xl" />
+            </Flex>
           ) : (
             <ScheduleXCalendar calendarApp={calendar} />
           )}
-
-          <SimpleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-            <Heading size="md" mb={4} textAlign="center">
-              Add New Schedule
-            </Heading>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block mb-2">
-                  Title:
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded mt-1"
-                    required
-                  />
-                </label>
-              </div>
-
-              <div className="mb-4">
-                <label className="block mb-2">
-                  Start:
-                  <input
-                    type="datetime-local"
-                    name="start"
-                    value={formData.start}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded mt-1"
-                    required
-                  />
-                </label>
-              </div>
-
-              <div className="mb-4">
-                <label className="block mb-2">
-                  End:
-                  <input
-                    type="datetime-local"
-                    name="end"
-                    value={formData.end}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded mt-1"
-                    required
-                  />
-                </label>
-              </div>
-
-              <div className="mb-4">
-                <label className="block mb-2">
-                  Description:
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded mt-1"
-                    rows="3"
-                  />
-                </label>
-              </div>
-
-              <div className="mb-4">
-                <label className="block mb-2">
-                  Calendar:
-                  <select
-                    name="calendarId"
-                    value={formData.calendarId}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded mt-1"
-                  >
-                    <option value="">Default</option>
-                    <option value="mass">Mass</option>
-                    <option value="event">Event</option>
-                  </select>
-                </label>
-              </div>
-
-              <div className="flex justify-end gap-2 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </SimpleModal>
         </Box>
       </Flex>
     </VStack>
