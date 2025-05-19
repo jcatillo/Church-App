@@ -1,14 +1,11 @@
-<<<<<<< HEAD
 import {
   addDoc,
   collection,
   getDocs,
   doc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
-=======
-import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
->>>>>>> efe357263b847b514d4be07c3f0d736d048b5f08
 import { db } from "@/config/firebase";
 
 const bookingsCollection = collection(db, "Calendar");
@@ -82,8 +79,6 @@ export const updateCalendarEvent = async (id, data) => {
     throw err;
   }
 };
-<<<<<<< HEAD
-=======
 
 export const deleteCalendarEvent = async (id) => {
   try {
@@ -96,4 +91,3 @@ export const deleteCalendarEvent = async (id) => {
     throw err;
   }
 };
->>>>>>> efe357263b847b514d4be07c3f0d736d048b5f08
