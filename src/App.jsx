@@ -11,6 +11,8 @@ import { AdminLayout } from "./AdminLayout";
 import { AdminHome } from "./pages/admin/AdminHome";
 import { auth } from "./config/firebase";
 import { useState, useEffect } from "react";
+import { Calendar } from "./pages/admin/calendar";
+import { AdminBooking } from "./pages/admin/bookings";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -59,6 +61,8 @@ function App() {
           }>
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<AdminHome />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="booking" element={<AdminBooking />} />
           </Route>
         </Routes>
       </Router>

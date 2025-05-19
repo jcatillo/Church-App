@@ -42,8 +42,8 @@ export function AdminNavbar() {
 
   const links = [
     { path: "/admin/home", label: "Home" },
-    // { path: "/events", label: "Events" },
-    // { path: "/schedule", label: "Schedule" },
+    { path: "/admin/calendar", label: "Calendar" },
+    { path: "/admin/booking", label: "Bookings" },
     // { path: "/booking", label: "Booking" },
     // { path: "/contact-us", label: "Contact Us" },
     // { path: "/about-us", label: "About Us" },

@@ -12,6 +12,36 @@ import { Box, Flex, VStack } from "@chakra-ui/react";
 
 export function Schedule() {
   const calendar = useCalendarApp({
+    calendars:{
+      mass: {
+      colorName: 'mass',
+      lightColors: {
+        main: '#f9d71c',
+        container: '#fff5aa',
+        onContainer: '#594800',
+      },
+      darkColors: {
+        main: '#fff5c0',
+        onContainer: '#fff5de',
+        container: '#a29742',
+      },
+    },
+
+    event: {
+      colorName: 'event',
+      lightColors: {
+        main: '#f91c45',
+        container: '#ffd2dc',
+        onContainer: '#59000d',
+      },
+      darkColors: {
+        main: '#ffc0cc',
+        onContainer: '#ffdee6',
+        container: '#a24258',
+      },
+    },
+    },
+
     views: [
       createViewDay(),
       createViewWeek(),
@@ -26,6 +56,7 @@ export function Schedule() {
         end: "2025-05-17 10:00",
         description: "Weekly parish mass",
         customClass: "mass-event",
+        calendarId: "mass"
       },
       {
         id: "2",
