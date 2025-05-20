@@ -24,7 +24,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { createListCollection } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/components/ui/toaster";
-
+import { sendCancellationEmail, sendAcceptanceEmail } from "@/services/emailService";
 export function AdminBooking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +75,24 @@ export function AdminBooking() {
         )
       );
 
-      // If booking is accepted, add to calendar with the same ID
+      // Prepare email data
+      const emailData = {
+        name: `${data.fname} ${data.lname}`,
+        bookingType: data.bookingType,
+        booking: data.bookingType, // Assuming 'booking' is same as bookingType; adjust if needed
+        bookingid: data.id,
+        event_type: data.bookingType, // Adjust if event_type is different
+        date: data.date,
+        time: data.time,
+        email: data.email,
+        phone: data.phone,
+        sender_name: "Rey Angelo Ramilo", // Replace with actual sender name or config
+        sender_position: "Administrator", // Replace with actual position or config
+        sender_contact: "stvpdanao55@gmail.com", // Replace with actual contact or config
+        organization_name: "Sto Tomas De Villanueva - Danao", // Replace with actual organization name
+      };
+
+      // If booking is accepted, add to calendar and send acceptance email
       if (status === "accepted") {
         const clientName = `${data.fname} ${data.lname}`;
         const startDateTime = `${data.date} ${data.time}`; // e.g., "2025-05-20 09:00"
@@ -102,25 +119,31 @@ export function AdminBooking() {
         };
 
         await addBookingToCalendar(calendarEvent);
-        console.log("Added to calendar:", calendarEvent);
+        await sendAcceptanceEmail(emailData); // Send acceptance email
+        console.log("Added to calendar and sent acceptance email:", calendarEvent);
       } else if (status === "cancelled" && data.status === "accepted") {
-        // If booking is cancelled and was previously accepted, delete calendar event
+        // If booking is cancelled and was previously accepted, delete calendar event and send cancellation email
         await deleteCalendarEvent(data.id);
-        console.log("Deleted calendar event:", data.id);
+        await sendCancellationEmail(emailData); // Send cancellation email
+        console.log("Deleted calendar event and sent cancellation email:", data.id);
+      } else if (status === "cancelled") {
+        // If booking is cancelled but was not accepted, just send cancellation email
+        await sendCancellationEmail(emailData); // Send cancellation email
+        console.log("Sent cancellation email:", data.id);
       }
 
       toast.create({
         title: "Success",
-        description: `Booking ${status === "accepted" ? "accepted and added to calendar" : "cancelled"} successfully.`,
+        description: `Booking ${status === "accepted" ? "accepted and added to calendar" : "cancelled"} successfully. Email sent.`,
         type: "success",
         duration: 5000,
         isClosable: true,
       });
     } catch (error) {
-      console.error("Failed to update booking or modify calendar:", error);
+      console.error("Failed to update booking, modify calendar, or send email:", error);
       toast.create({
         title: "Error",
-        description: "Failed to update booking or modify calendar. Please try again.",
+        description: "Failed to update booking, modify calendar, or send email. Please try again.",
         type: "error",
         duration: 5000,
         isClosable: true,
