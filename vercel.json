@@ -1,0 +1,28 @@
+{
+    "routes": [
+        {
+            "src": "/",
+            "dest": "/"
+        },
+        {
+            "src": "/events",
+            "dest": "/"
+        },
+        {
+            "src": "/schedule",
+            "dest": "/"
+        },
+        {
+            "src": "/booking",
+            "dest": "/"
+        },
+        {
+            "src": "/contact-us",
+            "dest": "/"
+        },
+        {
+            "src": "/about-us",
+            "dest": "/"
+        }
+    ]
+}
