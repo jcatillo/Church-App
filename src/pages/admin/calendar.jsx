@@ -24,6 +24,7 @@ import {
   Textarea,
   Spinner,
   Center,
+  Portal
 } from "@chakra-ui/react";
 import { SimpleModal } from "@/components/SimpleModal";
 import { CiEdit } from "react-icons/ci";
@@ -502,13 +503,42 @@ export function Calendar() {
           <SimpleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
   <div className="relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-auto p-8">
     {isSaving && (
-      <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center rounded-lg backdrop-blur-sm">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-700 text-base font-medium">Adding Schedule. Please wait...</p>
-        </div>
-      </div>
-    )}
+  <Portal>
+    <Box
+      position="fixed"
+      top="0"
+      left="0"
+      width="100vw"
+      height="100vh"
+      bg="blackAlpha.600"
+      zIndex="9999"
+    >
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        height="100%"
+        gap={4}
+      >
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+        <Text fontSize="lg" fontWeight="semibold" color="white">
+          Saving your schedule...
+        </Text>
+        <Text fontSize="sm" color="gray.200">
+          Please wait a moment
+        </Text>
+      </Flex>
+    </Box>
+  </Portal>
+)}
+
+
 
     <Heading as="h2" size="xl" textAlign="center" mb={6} fontWeight="semibold" color="gray.800">
       Add New Schedule/Event
