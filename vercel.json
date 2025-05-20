@@ -23,6 +23,18 @@
         {
             "src": "/about-us",
             "dest": "/"
+        },
+        {
+            "src": "/admin/home",
+            "dest": "/"
+        },
+        {
+            "src": "/admin/calendar",
+            "dest": "/"
+        },
+        {
+            "src": "/login",
+            "dest": "/"
         }
     ]
 }
