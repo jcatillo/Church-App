@@ -5,6 +5,7 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  setDoc
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -49,10 +50,11 @@ export const addToCalendar = async (data) => {
   try {
     const docRef = await addDoc(bookingsCollection, {
       title: data.title,
-      start: data.start, // Already in yyyy-mm-dd hh:mm
+      start: data.start,
       end: data.end,
       description: data.description || "",
       calendarId: data.calendarId || null,
+      rrule: data.rrule || null,
     });
     console.log("Event added with ID:", docRef.id);
     return { id: docRef.id, ...data };
@@ -61,6 +63,30 @@ export const addToCalendar = async (data) => {
     throw err;
   }
 };
+
+export const addBookingToCalendar = async (data) => {
+  try {
+    const id = data.id || crypto.randomUUID(); // fallback to random ID if not provided
+    const docRef = doc(bookingsCollection, id); // create a reference with the custom ID
+
+    await setDoc(docRef, {
+      title: data.title,
+      start: data.start,
+      end: data.end,
+      description: data.description || "",
+      calendarId: data.calendarId || null,
+      rrule: data.rrule || null,
+    });
+
+    console.log("Event added with ID:", id);
+    return { id, ...data };
+  } catch (err) {
+    console.error("Error adding event to calendar:", err);
+    throw err;
+  }
+};
+
+
 
 export const updateCalendarEvent = async (id, data) => {
   try {
@@ -71,6 +97,7 @@ export const updateCalendarEvent = async (id, data) => {
       end: data.end,
       description: data.description || "",
       calendarId: data.calendarId || null,
+      rrule: data.rrule || null,
     });
     console.log("Event updated with ID:", id);
     return { id, ...data };

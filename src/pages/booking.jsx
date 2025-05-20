@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 import { addBooking, getBookings } from "@/data/bookings";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { addToCalendar } from "@/data/calendar";
 
 export function Booking() {
   const [bookings, setBookings] = useState([]);

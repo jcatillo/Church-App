@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { addBooking, getBookings, updateBooking } from "@/data/bookings";
+import { addBookingToCalendar, updateCalendarEvent, deleteCalendarEvent } from "@/data/calendar";
 import {
   Box,
   Flex,
@@ -23,7 +24,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { createListCollection } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/components/ui/toaster";
-
 
 export function AdminBooking() {
   const [bookings, setBookings] = useState([]);
@@ -67,24 +67,60 @@ export function AdminBooking() {
   const acceptBooking = async (data, status) => {
     try {
       setLoading(true);
+      // Update booking status
       await updateBooking({ ...data, status });
       setBookings((prev) =>
         prev.map((booking) =>
           booking.id === data.id ? { ...booking, status } : booking
         )
       );
+
+      // If booking is accepted, add to calendar with the same ID
+      if (status === "accepted") {
+        const clientName = `${data.fname} ${data.lname}`;
+        const startDateTime = `${data.date} ${data.time}`; // e.g., "2025-05-20 09:00"
+        const startDate = new Date(`${data.date}T${data.time}:00`);
+        const endDate = new Date(startDate);
+        // Set end time: 1 hour for mass, 1.5 hours for others
+        if (data.bookingType === "mass") {
+          endDate.setHours(endDate.getHours() + 1);
+        } else {
+          endDate.setHours(endDate.getHours() + 1);
+          endDate.setMinutes(endDate.getMinutes() + 30);
+        }
+        const endDateTime = `${data.date} ${endDate
+          .toTimeString()
+          .slice(0, 5)}`; // e.g., "2025-05-20 10:00"
+
+        const calendarEvent = {
+          id: data.id, // Use booking ID
+          title: `${data.bookingType} - ${clientName}`,
+          start: startDateTime,
+          end: endDateTime,
+          description: `${clientName} - ${data.phone} - ${clientName}`,
+          calendarId: "booking",
+        };
+
+        await addBookingToCalendar(calendarEvent);
+        console.log("Added to calendar:", calendarEvent);
+      } else if (status === "cancelled" && data.status === "accepted") {
+        // If booking is cancelled and was previously accepted, delete calendar event
+        await deleteCalendarEvent(data.id);
+        console.log("Deleted calendar event:", data.id);
+      }
+
       toast.create({
         title: "Success",
-        description: `Booking ${status === "accepted" ? "accepted" : "cancelled"} successfully.`,
+        description: `Booking ${status === "accepted" ? "accepted and added to calendar" : "cancelled"} successfully.`,
         type: "success",
         duration: 5000,
         isClosable: true,
       });
     } catch (error) {
-      console.error("Failed to update booking:", error);
+      console.error("Failed to update booking or modify calendar:", error);
       toast.create({
         title: "Error",
-        description: "Failed to update booking. Please try again.",
+        description: "Failed to update booking or modify calendar. Please try again.",
         type: "error",
         duration: 5000,
         isClosable: true,
@@ -126,7 +162,39 @@ export function AdminBooking() {
         time: data.time ? data.time.toTimeString().slice(0, 5) : "",
         status: bookings.find((b) => b.id === editingId).status,
       };
+
+      // Update booking in Firestore
       await updateBooking(formattedData);
+
+      // If booking is accepted, update the corresponding calendar event
+      if (formattedData.status === "accepted") {
+        const clientName = `${data.fname} ${data.lname}`;
+        const startDateTime = `${formattedData.date} ${formattedData.time}`;
+        const startDate = new Date(`${formattedData.date}T${formattedData.time}:00`);
+        const endDate = new Date(startDate);
+        if (data.bookingType === "mass") {
+          endDate.setHours(endDate.getHours() + 1);
+        } else {
+          endDate.setHours(endDate.getHours() + 1);
+          endDate.setMinutes(endDate.getMinutes() + 30);
+        }
+        const endDateTime = `${formattedData.date} ${endDate
+          .toTimeString()
+          .slice(0, 5)}`;
+
+        const calendarEvent = {
+          title: `${data.bookingType} - ${clientName}`,
+          start: startDateTime,
+          end: endDateTime,
+          description: `${clientName} - ${data.phone} - ${clientName}`,
+          calendarId: "booking",
+        };
+
+        await updateCalendarEvent(formattedData.id, calendarEvent);
+        console.log("Updated calendar event:", calendarEvent);
+      }
+
+      // Update local state
       setBookings((prev) =>
         prev.map((booking) =>
           booking.id === editingId ? { ...booking, ...formattedData } : booking
@@ -134,6 +202,7 @@ export function AdminBooking() {
       );
       setEditingId(null);
       reset({});
+
       toast.create({
         title: "Success",
         description: "Booking updated successfully.",
@@ -142,10 +211,10 @@ export function AdminBooking() {
         isClosable: true,
       });
     } catch (error) {
-      console.error("Failed to save booking:", error);
+      console.error("Failed to save booking or update calendar:", error);
       toast.create({
         title: "Error",
-        description: "Failed to save booking. Please try again.",
+        description: "Failed to save booking or update calendar. Please try again.",
         type: "error",
         duration: 5000,
         isClosable: true,
@@ -205,7 +274,7 @@ export function AdminBooking() {
 
   return (
     <Container maxW="container.xl" py={8}>
-        <Toaster/>
+      <Toaster />
       <Stack spacing={6}>
         <Flex justify="space-between" align="center">
           <Heading>Booking Management</Heading>

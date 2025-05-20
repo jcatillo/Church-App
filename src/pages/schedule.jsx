@@ -7,16 +7,15 @@ import {
   createViewMonthAgenda,
 } from "@schedule-x/calendar";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
-import "@schedule-x/theme-default/dist/index.css";
-import { Box, Flex, VStack, Button, Spinner } from "@chakra-ui/react";
-import { getCalendar } from "@/data/calendar";
 import { createEventRecurrencePlugin } from "@schedule-x/event-recurrence";
-
+import "@schedule-x/theme-default/dist/index.css";
+import { Box, Flex, VStack, Spinner } from "@chakra-ui/react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 export function Schedule() {
-  const [calendars, setCalendars] = useState([]);
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true); // Track loading state
+  const [loading, setLoading] = useState(true);
 
   // Initialize the calendar app
   const calendar = useCalendarApp({
@@ -54,41 +53,63 @@ export function Schedule() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    events: [], // Initialize empty; update dynamically
-    plugins: [createEventModalPlugin(), createEventRecurrencePlugin()],
+    events: [],
+    plugins: [
+      createEventModalPlugin(),
+      createEventRecurrencePlugin({
+        maxInstances: 100, // Limit recurring event instances
+      }),
+    ],
     defaultView: "week",
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading
+    const unsubscribe = onSnapshot(collection(db, "Calendar"), (snapshot) => {
+      setLoading(true);
       try {
-        const calendarsData = await getCalendar();
-        setCalendars(calendarsData);
+        const calendarsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // Filter for mass and event only
+        const filteredCalendars = calendarsData.filter(
+          (calendar) => calendar.calendarId === "mass" || calendar.calendarId === "event"
+        );
 
-        const formattedEvents = calendarsData.map((calendar) => ({
+        const formattedEvents = filteredCalendars.map((calendar) => ({
           id: calendar.id,
           title: calendar.title,
           start: calendar.start,
           end: calendar.end,
           description: calendar.description || "No description",
-          calendarId: calendar.calendarId === "mass" ? "mass" : "event",
-          rrule: calendar.rrule
+          calendarId: calendar.calendarId,
+          rrule: calendar.rrule || null,
         }));
 
         setEvents(formattedEvents);
+
         if (calendar) {
-          calendar.events.set(formattedEvents); // Set events in ScheduleX
+          // Add events in batches to prevent blocking
+          const batchSize = 50;
+          for (let i = 0; i < formattedEvents.length; i += batchSize) {
+            const batch = formattedEvents.slice(i, i + batchSize);
+            calendar.events.set([...calendar.events.getAll(), ...batch]);
+            // Yield to the event loop
+            setTimeout(() => {}, 0);
+          }
         }
       } catch (err) {
-        console.error("Failed to fetch calendars:", err);
+        console.error("Failed to process calendars:", err);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
-    };
+    }, (err) => {
+      console.error("Failed to fetch calendars:", err);
+      setLoading(false);
+    });
 
-    fetchData();
-  }, [calendar]); // Depend on calendar
+    return () => unsubscribe();
+  }, [calendar]);
 
   return (
     <VStack spacing={5} align="center" justify="center" p={4} minH="100vh">
