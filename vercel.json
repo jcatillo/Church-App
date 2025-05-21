@@ -35,6 +35,10 @@
         {
             "src": "/login",
             "dest": "/"
+        },
+        {
+            "src": "/admin/booking",
+            "dest": "/"
         }
     ]
 }
