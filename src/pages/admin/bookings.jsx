@@ -24,7 +24,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { createListCollection } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/components/ui/toaster";
-import { sendCancellationEmail, sendAcceptanceEmail } from "@/services/emailService";
+import {  sendBookingNotification } from "@/services/emailService";
 export function AdminBooking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +77,7 @@ export function AdminBooking() {
 
       // Prepare email data
       const emailData = {
+        status: status.toUpperCase(),
         name: `${data.fname} ${data.lname}`,
         bookingType: data.bookingType,
         booking: data.bookingType, // Assuming 'booking' is same as bookingType; adjust if needed
@@ -119,16 +120,16 @@ export function AdminBooking() {
         };
 
         await addBookingToCalendar(calendarEvent);
-        await sendAcceptanceEmail(emailData); // Send acceptance email
+        await sendBookingNotification(emailData); // Send acceptance email
         console.log("Added to calendar and sent acceptance email:", calendarEvent);
       } else if (status === "cancelled" && data.status === "accepted") {
         // If booking is cancelled and was previously accepted, delete calendar event and send cancellation email
         await deleteCalendarEvent(data.id);
-        await sendCancellationEmail(emailData); // Send cancellation email
+        await sendBookingNotification(emailData); // Send cancellation email
         console.log("Deleted calendar event and sent cancellation email:", data.id);
       } else if (status === "cancelled") {
         // If booking is cancelled but was not accepted, just send cancellation email
-        await sendCancellationEmail(emailData); // Send cancellation email
+        await sendBookingNotification(emailData); // Send cancellation email
         console.log("Sent cancellation email:", data.id);
       }
 

@@ -18,6 +18,7 @@ import { useColorMode } from "@/components/ui/color-mode";
 import { motion } from "framer-motion";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { Toaster, toaster } from "@/components/ui/toaster";
+import { sendContactUsEmail } from "@/services/emailService";
 
 // Create motion wrapper
 const MotionBox = motion(Box);
@@ -26,14 +27,33 @@ export function ContactUs() {
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your form submission logic here
-    toaster.success({
+  // gather form data from inputs or controlled state
+  const formData = {
+    name: e.target.name.value,
+    email: e.target.email.value,
+    subject: e.target.subject.value,
+    message: e.target.message.value,
+  };
+
+  console.log(formData);
+
+  try {
+    await sendContactUsEmail(formData);
+    toaster.create({
       title: "Message Sent",
       description: "We'll get back to you as soon as possible.",
+      type: "success"
     });
-  };
+  } catch (error) {
+    toaster.create({
+      title: "Failed to send message",
+      description: "Please try again later.",
+      type: "error"
+    });
+  }
+};
 
   return (
     <Container maxW="container.xl" py={10}>
@@ -145,6 +165,7 @@ export function ContactUs() {
           >
             <VStack spacing={4}>
               <Input
+              name="name"
                 placeholder="Your Name"
                 size="lg"
                 required
@@ -158,6 +179,7 @@ export function ContactUs() {
                 _placeholder={{ color: isDark ? "gray.400" : "gray.500" }}
               />
               <Input
+              name="email"
                 type="email"
                 placeholder="Your Email"
                 size="lg"
@@ -172,6 +194,7 @@ export function ContactUs() {
                 _placeholder={{ color: isDark ? "gray.400" : "gray.500" }}
               />
               <Input
+              name="subject"
                 placeholder="Subject"
                 size="lg"
                 required
@@ -185,6 +208,7 @@ export function ContactUs() {
                 _placeholder={{ color: isDark ? "gray.400" : "gray.500" }}
               />
               <Textarea
+              name="message"
                 placeholder="Your Message"
                 size="lg"
                 required
