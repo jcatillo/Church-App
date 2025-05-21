@@ -1,10 +1,15 @@
 import emailjs from '@emailjs/browser';
 
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const TEMPLATE_CANCELLATION_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_CANCELLATION_ID;
+const TEMPLATE_ACCEPTANCE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ACCEPTANCE_ID;
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
 // Send Booking Cancellation Email
 export const sendCancellationEmail = (data) => {
   return emailjs.send(
-    'service_c7dzvk5',         // Your EmailJS Service ID
-    'template_o6dllf6',        // Your EmailJS Cancellation Template ID
+    SERVICE_ID,
+    TEMPLATE_CANCELLATION_ID,
     {
       name: data.name,
       bookingType: data.bookingType,
@@ -20,15 +25,15 @@ export const sendCancellationEmail = (data) => {
       sender_contact: data.sender_contact,
       organization_name: data.organization_name
     },
-    'fu89KzFRCR2gcMiyG'       // Your EmailJS Public Key
+    PUBLIC_KEY
   );
 };
 
 // Send Booking Acceptance Email
 export const sendAcceptanceEmail = (data) => {
   return emailjs.send(
-    'service_c7dzvk5',         // Your EmailJS Service ID
-    'template_pkqlnim',    // Replace with your EmailJS Acceptance Template ID
+    SERVICE_ID,
+    TEMPLATE_ACCEPTANCE_ID,
     {
       name: data.name,
       bookingType: data.bookingType,
@@ -44,6 +49,6 @@ export const sendAcceptanceEmail = (data) => {
       sender_contact: data.sender_contact,
       organization_name: data.organization_name
     },
-    'fu89KzFRCR2gcMiyG'       // Your EmailJS Public Key
+    PUBLIC_KEY
   );
 };
