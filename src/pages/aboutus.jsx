@@ -59,7 +59,7 @@ export function AboutUs() {
               Welcome to <strong>STVP</strong>, a Christ-centered
               community committed to spreading love, faith, and hope. We are
               glad you're here. <br /> <br />
-              We are located at 123 Faith Street, Springfield. Easily accessible
+              We are located at Danao City. Easily accessible
               by public transport with ample parking available. Come visit us
               and join our community!
             </Text>
