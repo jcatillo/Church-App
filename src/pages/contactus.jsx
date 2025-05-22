@@ -170,7 +170,7 @@ export function ContactUs() {
                 size="lg"
                 required
                 bg={isDark ? "black" : "gray.50"}
-                color={isDark ? "black" : "black"}
+                color={isDark ? "black" : "white"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -185,7 +185,7 @@ export function ContactUs() {
                 size="lg"
                 required
                 bg={isDark ? "black" : "gray.50"}
-                color={isDark ? "black" : "black"}
+                color={isDark ? "black" : "white"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -199,7 +199,7 @@ export function ContactUs() {
                 size="lg"
                 required
                 bg={isDark ? "black" : "gray.50"}
-                color={isDark ? "black" : "black"}
+                color={isDark ? "black" : "white"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
@@ -214,7 +214,7 @@ export function ContactUs() {
                 required
                 rows={6}
                 bg={isDark ? "black" : "gray.50"}
-                color={isDark ? "black" : "black"}
+                color={isDark ? "black" : "white"}
                 _hover={{ borderColor: "blue.500" }}
                 _focus={{
                   borderColor: "blue.500",
