@@ -10,7 +10,7 @@ import {
   Button,
   Card,
   SimpleGrid,
-  Link
+  Link,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Link as RouterLink } from "react-router-dom"; // Import React Router's Link
@@ -24,39 +24,44 @@ const MotionCard = motion(Card.Root);
 const services = [
   {
     title: "Wake Mass",
+    value: "wake mass", // Add value to match Booking component's types
     description:
       "A special mass held for the deceased, offering prayers and comfort for grieving families.",
     image:
-      "https://images.pexels.com/photos/257030/pexels-photo-257030.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      "https://images.pexels.com/photos/257030/pexels-photo-257030.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
     title: "Wedding",
+    value: "wedding",
     description:
       "A sacred ceremony celebrating the union of two people in holy matrimony, blessed by God.",
     image:
-      "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
     title: "Baptismal",
+    value: "baptismal",
     description:
       "A baptismal rite symbolizing purification, rebirth, and acceptance into the Christian faith.",
     image:
-      "https://images.pexels.com/photos/17120314/pexels-photo-17120314/free-photo-of-baptism-of-newborn-baby.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      "https://images.pexels.com/photos/17120314/pexels-photo-17120314/free-photo-of-baptism-of-newborn-baby.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
     title: "Mass",
+    value: "mass",
     description:
       "The central act of worship in the Catholic Church, where the faithful gather to celebrate the Eucharist, receive spiritual nourishment, and strengthen their faith through prayer and community.",
     image:
-      "https://christthekingparish.ph/wp-content/uploads/2016/09/healing-mass-2.jpg"
+      "https://christthekingparish.ph/wp-content/uploads/2016/09/healing-mass-2.jpg",
   },
   {
     title: "Deliverance",
+    value: "deliverance",
     description:
       "A ministry that involves prayers to break spiritual bondages and reclaim spiritual freedom.",
     image:
-      "https://i.swncdn.com/media/960w/cms/CW/49758-Jesus-crucifixion-1200x627-thinkstock.1200w.tn.webp"
-  }
+      "https://i.swncdn.com/media/960w/cms/CW/49758-Jesus-crucifixion-1200x627-thinkstock.1200w.tn.webp",
+  },
 ];
 
 export function Home() {
@@ -144,9 +149,16 @@ export function Home() {
           >
             <Blockquote.Root>
               <Blockquote.Content>
-                Sto. Tomas de Villanueva parish church in Danao stands as one of the oldest churches found in the Philippines. It was originally constructed in 1755 and its construction was credited to Fr. Manuel de Santa Barbara. The church was made up of numerous materials including sugar cane and cut coral stones from the sea which was a common building material for churches constructed near the shoreline during that period. Historical accounts about Danao mentioned that the church was opened to worship in 1824 under Recollect administration.
+                Sto. Tomas de Villanueva parish church in Danao stands as one of
+                the oldest churches found in the Philippines. It was originally
+                constructed in 1755 and its construction was credited to Fr.
+                Manuel de Santa Barbara. The church was made up of numerous
+                materials including sugar cane and cut coral stones from the sea
+                which was a common building material for churches constructed
+                near the shoreline during that period. Historical accounts about
+                Danao mentioned that the church was opened to worship in 1824
+                under Recollect administration.
               </Blockquote.Content>
-              {/* Use RouterLink instead of anchor tag */}
               <RouterLink to="/about-us">
                 <Button bg={"black"} color={"white"}>
                   Learn more
@@ -186,10 +198,9 @@ export function Home() {
           Church Services
         </Text>
 
-        {/* ...inside Services Section: */}
         <SimpleGrid
           columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
-          spacing={12}  // increased spacing from 8 to 12
+          spacing={12}
           justifyItems="center"
         >
           {services.map((service, index) => (
@@ -201,7 +212,8 @@ export function Home() {
               borderRadius="md"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              m={5}>
+              m={5}
+            >
               <Image
                 src={service.image}
                 alt={service.title}
@@ -218,8 +230,7 @@ export function Home() {
                 </Card.Description>
               </Card.Body>
               <Card.Footer p={4}>
-                {/* Use RouterLink instead of anchor tag */}
-                <RouterLink to="/booking">
+                <RouterLink to={`/booking?type=${service.value}`}>
                   <Button colorScheme="blue" width="100%">
                     Book an Appointment
                   </Button>

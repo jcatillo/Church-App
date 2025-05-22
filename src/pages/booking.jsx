@@ -20,9 +20,14 @@ import { addBooking, getBookings } from "@/data/bookings";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addToCalendar } from "@/data/calendar";
+import { useSearchParams } from "react-router-dom"; // Import useSearchParams
 
 export function Booking() {
   const [bookings, setBookings] = useState([]);
+  const [searchParams] = useSearchParams(); // Get query parameters
+
+  // Extract the 'type' query parameter from the URL
+  const queryType = searchParams.get("type") || "";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,10 +49,21 @@ export function Booking() {
     control,
     formState: { errors },
     reset,
-  } = useForm();
+    setValue, 
+  } = useForm({
+    defaultValues: {
+      type: queryType, 
+    },
+  });
+
+  // Set the type value when the component mounts or queryType changes
+  useEffect(() => {
+    if (queryType) {
+      setValue("type", queryType);
+    }
+  }, [queryType, setValue]);
 
   const onSubmit = handleSubmit((data) => {
-    // Format the date to ensure it's properly captured
     const formattedData = {
       ...data,
       date: data.date instanceof Date ? data.date.toISOString() : data.date,
@@ -85,13 +101,7 @@ export function Booking() {
       py={8}
     >
       <Toaster />
-      <Box
-        width="90%"
-        maxWidth="800px"
-        p={6}
-        borderRadius="md"
-        boxShadow="md"
-      >
+      <Box width="90%" maxWidth="800px" p={6} borderRadius="md" boxShadow="md">
         <Heading size="3xl" mb={4} textAlign="center" fontWeight={"bold"}>
           Booking
         </Heading>
@@ -193,13 +203,13 @@ export function Booking() {
                 name="type"
                 control={control}
                 rules={{ required: "Booking type is required" }}
-                defaultValue=""
                 render={({ field }) => (
                   <Select.Root
                     invalid={errors.type ? true : false}
                     collection={types}
                     size="sm"
                     width="320px"
+                    value={field.value ? [field.value] : []} // Set the value for the Select
                     onValueChange={(item) => {
                       if (item) {
                         field.onChange(item.value);
@@ -239,22 +249,22 @@ export function Booking() {
               <Field.Label>
                 Select date<span style={{ color: "red" }}>*</span>
               </Field.Label>
-                <Controller
-                  control={control}
-                  name="date"
-                  rules={{ required: "Date is required" }}
-                  render={({ field }) => (
-                    <DatePicker
-                      placeholderText="Select Date"
-                      {...field}
-                      selected={field.value}
-                      minDate={new Date()}
-                      onChange={(date) => field.onChange(date)}
-                      dateFormat="yyyy/MM/dd"
-                      customInput={<Input autoComplete="off" />}
-                    />
-                  )}
-                />
+              <Controller
+                control={control}
+                name="date"
+                rules={{ required: "Date is required" }}
+                render={({ field }) => (
+                  <DatePicker
+                    placeholderText="Select Date"
+                    {...field}
+                    selected={field.value}
+                    minDate={new Date()}
+                    onChange={(date) => field.onChange(date)}
+                    dateFormat="yyyy/MM/dd"
+                    customInput={<Input autoComplete="off" />}
+                  />
+                )}
+              />
               <Field.ErrorText>
                 {errors.date && errors.date.message}
               </Field.ErrorText>
@@ -264,27 +274,26 @@ export function Booking() {
               <Field.Label>
                 Select Time<span style={{ color: "red" }}>*</span>
               </Field.Label>
-
-                <Controller
-                  control={control}
-                  name="time"
-                  rules={{ required: "Time is required" }}
-                  render={({ field }) => (
-                    <DatePicker
-                      placeholderText="Select Time"
-                      selected={field.value}
-                      onChange={(date) => field.onChange(date)}
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={15}
-                      timeCaption="Time"
-                      dateFormat="h:mm aa"
-                      customInput={<Input />}
-                    />
-                  )}
-                />
+              <Controller
+                control={control}
+                name="time"
+                rules={{ required: "Time is required" }}
+                render={({ field }) => (
+                  <DatePicker
+                    placeholderText="Select Time"
+                    selected={field.value}
+                    onChange={(date) => field.onChange(date)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                    customInput={<Input />}
+                  />
+                )}
+              />
               <Field.ErrorText>
-                {errors.date && errors.date.message}
+                {errors.time && errors.time.message}
               </Field.ErrorText>
             </Field.Root>
 
