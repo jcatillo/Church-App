@@ -94,7 +94,7 @@ const getDeclinedHtml = (data) => `
 `;
 
 
-  const message = status === 'accepted' ? getAcceptedHtml(data) : getDeclinedHtml(data);
+  const message = status === 'ACCEPTED' ? getAcceptedHtml(data) : getDeclinedHtml(data);
 
   console.log(message);
  
