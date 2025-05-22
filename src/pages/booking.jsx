@@ -20,23 +20,67 @@ import { addBooking, getBookings } from "@/data/bookings";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addToCalendar } from "@/data/calendar";
-import { useSearchParams } from "react-router-dom"; // Import useSearchParams
+import { useSearchParams, useNavigate } from "react-router-dom";
+
+const services = [
+  {
+    title: "Wake Mass",
+    value: "wake mass",
+    description:
+      "A special mass held for the deceased, offering prayers and comfort for grieving families.",
+    image:
+      "https://images.pexels.com/photos/257030/pexels-photo-257030.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    title: "Wedding",
+    value: "wedding",
+    description:
+      "A sacred ceremony celebrating the union of two people in holy matrimony, blessed by God.",
+    image:
+      "https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    title: "Baptismal",
+    value: "baptismal",
+    description:
+      "A baptismal rite symbolizing purification, rebirth, and acceptance into the Christian faith.",
+    image:
+      "https://images.pexels.com/photos/17120314/pexels-photo-17120314/free-photo-of-baptism-of-newborn-baby.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    title: "Mass",
+    value: "mass",
+    description:
+      "The central act of worship in the Catholic Church, where the faithful gather to celebrate the Eucharist, receive spiritual nourishment, and strengthen their faith through prayer and community.",
+    image:
+      "https://christthekingparish.ph/wp-content/uploads/2016/09/healing-mass-2.jpg",
+  },
+  {
+    title: "Deliverance",
+    value: "deliverance",
+    description:
+      "A ministry that involves prayers to break spiritual bondages and reclaim spiritual freedom.",
+    image:
+      "https://i.swncdn.com/media/960w/cms/CW/49758-Jesus-crucifixion-1200x627-thinkstock.1200w.tn.webp",
+  },
+];
 
 export function Booking() {
   const [bookings, setBookings] = useState([]);
-  const [searchParams] = useSearchParams(); // Get query parameters
-
-  // Extract the 'type' query parameter from the URL
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const queryType = searchParams.get("type") || "";
+
+  console.log("Query type:", queryType);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getBookings();
         setBookings(data);
-        console.log(data);
+        console.log("Fetched bookings:", data);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching bookings:", error);
       }
     };
 
@@ -49,19 +93,44 @@ export function Booking() {
     control,
     formState: { errors },
     reset,
-    setValue, 
+    setValue,
   } = useForm({
     defaultValues: {
-      type: queryType, 
+      type: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      date: null,
+      time: null,
     },
   });
 
-  // Set the type value when the component mounts or queryType changes
+  const types = createListCollection({
+    items: services.map((service) => ({
+      label: service.title,
+      value: service.value,
+    })),
+  });
+
+  // Validate queryType and redirect if invalid
   useEffect(() => {
     if (queryType) {
-      setValue("type", queryType);
+      const validType = services.find((service) => service.value === queryType);
+      if (validType) {
+        setValue("type", queryType);
+      } else {
+        toaster.create({
+          title: "Invalid booking type",
+          description: "Please select a valid booking type.",
+          type: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        navigate("/"); // Redirect to error page
+      }
     }
-  }, [queryType, setValue]);
+  }, [queryType, setValue, navigate]);
 
   const onSubmit = handleSubmit((data) => {
     const formattedData = {
@@ -69,9 +138,16 @@ export function Booking() {
       date: data.date instanceof Date ? data.date.toISOString() : data.date,
     };
 
-    console.log(formattedData);
     addBooking(formattedData);
-    reset();
+    reset({
+      type: queryType,
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      date: null,
+      time: null,
+    });
     toaster.create({
       title: "Booking successful!",
       description: "Please check your email occasionally to see some updates",
@@ -79,16 +155,6 @@ export function Booking() {
       duration: 5000,
       isClosable: true,
     });
-  });
-
-  const types = createListCollection({
-    items: [
-      { label: "Wedding", value: "wedding" },
-      { label: "Wake Mass", value: "wake mass" },
-      { label: "Mass", value: "mass" },
-      { label: "Deliverance", value: "deliverance" },
-      { label: "Baptismal", value: "baptismal" },
-    ],
   });
 
   return (
@@ -102,7 +168,7 @@ export function Booking() {
     >
       <Toaster />
       <Box width="90%" maxWidth="800px" p={6} borderRadius="md" boxShadow="md">
-        <Heading size="3xl" mb={4} textAlign="center" fontWeight={"bold"}>
+        <Heading size="3xl" mb={4} textAlign="center" fontWeight="bold">
           Booking
         </Heading>
         <Separator mb={4} />
@@ -144,7 +210,7 @@ export function Booking() {
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // simple email regex
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                     message: "Invalid email address",
                   },
                 })}
@@ -209,11 +275,11 @@ export function Booking() {
                     collection={types}
                     size="sm"
                     width="320px"
-                    value={field.value ? [field.value] : []} // Set the value for the Select
-                    onValueChange={(item) => {
-                      if (item) {
-                        field.onChange(item.value);
-                      }
+                    value={field.value ? [field.value] : []}
+                    onValueChange={({ value }) => {
+                      console.log("Selected value:", value);
+                      field.onChange(value[0] || "");
+                      console.log("Field: " + value);
                     }}
                   >
                     <Select.HiddenSelect name={field.name} ref={field.ref} />
@@ -230,7 +296,7 @@ export function Booking() {
                         <Select.Content>
                           {types.items.map((type) => (
                             <Select.Item item={type} key={type.value}>
-                              {type.label}
+                              <Select.ItemText>{type.label}</Select.ItemText>
                               <Select.ItemIndicator />
                             </Select.Item>
                           ))}

@@ -45,7 +45,7 @@ export const addBooking = async (data) => {
       lname: data.lastName,
       email: data.email,
       phone: data.phone,
-      bookingType: data.type[0],
+      bookingType: data.type,
       date: formattedDate,
       time: formattedTime,
       status: "pending",
