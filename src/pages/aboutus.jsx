@@ -56,7 +56,7 @@ export function AboutUs() {
               {...imageHover}
             />
             <Text fontSize="lg" textAlign="justify" mx={12}>
-              Welcome to <strong>[Church Name]</strong>, a Christ-centered
+              Welcome to <strong>STVP</strong>, a Christ-centered
               community committed to spreading love, faith, and hope. We are
               glad you're here. <br /> <br />
               We are located at 123 Faith Street, Springfield. Easily accessible
@@ -83,7 +83,7 @@ export function AboutUs() {
           </Box>
           <SimpleGrid columns={[1, null, 2]} spacing={12} alignItems="center">
             <Text fontSize="lg" textAlign="justify" mx={12}>
-              [Church Name] was founded in 1985 by a small group of faithful
+              STVP was founded in 1985 by a small group of faithful
               believers with a vision to build a strong spiritual foundation in
               the community. Starting in a modest home gathering, the church
               quickly grew in numbers and spirit, eventually establishing a
