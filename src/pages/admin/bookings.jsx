@@ -35,23 +35,6 @@ export function AdminBooking() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
 
-  // Initialize sample data with unique IDs
-  useEffect(() => {
-    const sampleBookings = [];
-    for (let i = 0; i < 20; i++) {
-      bookings.push({
-        id: `booking-${i}`,
-        bookingType: "wake mass",
-        date: "2025-11-29",
-        email: "charlieberbanio456@gmail.com",
-        fname: "Charlie",
-        lname: "Berbanio",
-        phone: "963-211-3465",
-        status: "pending",
-        time: "01:30",
-      });
-    }
-  }, []); // Run once on mount
   const [searchQuery, setSearchQuery] = useState("");
   const colorMode = useColorModeValue();
   const [editingId, setEditingId] = useState(null);
