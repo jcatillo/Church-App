@@ -514,16 +514,11 @@ export function AdminBooking() {
                               <Select.Root
                                 size="sm"
                                 value={field.value}
-                                onValueChange={(item) =>
-                                  field.onChange(item.value)
-                                }
+                                onValueChange={(item) => field.onChange(item.value)}
                                 collection={types}
                                 isInvalid={!!errors.bookingType}
                               >
-                                <Select.HiddenSelect
-                                  name={field.name}
-                                  ref={field.ref}
-                                />
+                                <Select.HiddenSelect name={field.name} ref={field.ref} />
                                 <Select.Control>
                                   <Select.Trigger>
                                     <Select.ValueText placeholder="Select type" />
@@ -536,7 +531,11 @@ export function AdminBooking() {
                                   <Select.Positioner>
                                     <Select.Content>
                                       {types.items.map((type) => (
-                                        <Select.Item item={type} key={type.value}>
+                                        <Select.Item 
+                                          item={type} 
+                                          key={type.value}
+                                          value={type.value}
+                                        >
                                           {type.label}
                                           <Select.ItemIndicator />
                                         </Select.Item>
@@ -547,9 +546,7 @@ export function AdminBooking() {
                               </Select.Root>
                             )}
                           />
-                          <Field.ErrorText>
-                            {errors.bookingType?.message}
-                          </Field.ErrorText>
+                          <Field.ErrorText>{errors.bookingType?.message}</Field.ErrorText>
                         </Field.Root>
                         <Field.Root invalid={!!errors.date}>
                           <Controller
